@@ -560,6 +560,8 @@ def button(update,_: CallbackContext):
 			inf = inf[1:]
 
 	else:
+		if query.data[:1] != "D":
+			string = fascia(query.data[1:])
 		if query.data[1:2] == "-" or query.data[1:2] == "*" or query.data[1:2] == "+" or query.data[1:2] == "%" or query.data[1:2] == "&" or query.data[1:2] == "?":
 			inf = query.data[2:]
 		else:
@@ -1018,9 +1020,6 @@ def button(update,_: CallbackContext):
 	try:
 		if query.data == "Chiudi":
 			query.edit_message_text(text=query.message.text)
-		elif query.data[:1] == "V" or query.data[:1] == "F" or query.data[:1] == "R":
-			reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-			query.edit_message_text(text=f"{query.message.text}", reply_markup=reply_markup, parse_mode='Markdown')
 		else:
 			reply_markup = telegram.InlineKeyboardMarkup(keyboard)
 			query.edit_message_text(text=f"{string}", reply_markup=reply_markup, parse_mode='Markdown')

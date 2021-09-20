@@ -454,7 +454,8 @@ def fascia(info):
 
 	if not fascia:
 		somm_dosi_aggiuntive = somm_d_a(somministrate,reg=reg,forn=forn,data1=data1,data2=data2)
-		string += "\nDose aggiuntiva su platea immunocompromessi\n" + bar(somm_dosi_aggiuntive,platea_d_a(platea_dose_aggiuntiva,reg=reg))
+		if somm_dosi_aggiuntive != 0:
+			string += "\nDose aggiuntiva su platea immunocompromessi\n" + bar(somm_dosi_aggiuntive,platea_d_a(platea_dose_aggiuntiva,reg=reg))
 	else:
 		somm_dosi_aggiuntive = 0
 		

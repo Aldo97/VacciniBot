@@ -1,5 +1,5 @@
 #    <VacciniBot: a telegram bot interpreting Italian vaccination data>
-#    Copyright (C) 2021  Aldo Tarquilio
+#    Copyright (C) 2021 Aldo Tarquilio
 
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -545,8 +545,7 @@ def button(update,_: CallbackContext):
 			inf = query.data
 		else:
 			if query.data[:1] == "a":
-				global forceupd
-				forceupd = True
+				forceupd()
 			inf = query.data[1:]
 		if len(query.data.split(",")[3]) != 4 and len(query.data.split(",")[3]) != 6 and len(query.data.split(",")[4]) != 4 and len(query.data.split(",")[4]) != 6:
 			string = fascia(inf)
@@ -563,14 +562,15 @@ def button(update,_: CallbackContext):
 			inf = inf[1:]
 
 	else:
-		if query.data[:1] == "A":
-			string = "Aggiornato al " + agg
-		elif query.data[:1] != "D" and query.data != "Chiudi":
+		if query.data[:1] != "D" and query.data != "Chiudi" and query.data[:1] != "A":
 			string = fascia(query.data[1:])
 		if query.data[1:2] == "-" or query.data[1:2] == "*" or query.data[1:2] == "+" or query.data[1:2] == "%" or query.data[1:2] == "&" or query.data[1:2] == "?":
 			inf = query.data[2:]
 		else:
 			inf = query.data[1:]
+	
+	if query.data[:1] == "A" or query.data[:1] == "a":
+		string = "Aggiornato al " + agg
 
 	if query.data[1:2] == "-" or query.data[:1] == "-":
 		infR1 = "r-"
@@ -979,7 +979,7 @@ def button(update,_: CallbackContext):
 				telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
 			],
 			]
-	elif query.data[:1] == "A":
+	elif query.data[:1] == "A" or query.data[:1] == "a":
 		if cid != query.message.chat.id:
 			keyboard = [
 			[
@@ -1091,8 +1091,6 @@ def tab():
 	global platea_dose_aggiuntiva
 	global agg
 	global agg2
-	global forceupd
-	forceupd = False
 	agg = ""
 	agg2 = ""
 	while True:
@@ -1102,11 +1100,20 @@ def tab():
 			platea_dose_aggiuntiva = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-aggiuntiva.csv')
 			agg = lastupd()
 		agg2 = date.datetime.now().strftime("%H:%M:%S")
-		for _ in range(17):
-			if forceupd:
-				forceupd = False
-				break
-			time.sleep(5*60)
+		time.sleep(90*60)
+		
+def forceupd():
+	global somministrate
+	global distribuite
+	global platea_dose_aggiuntiva
+	global agg
+	global agg2	
+
+	somministrate = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-latest.csv')
+	distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
+	platea_dose_aggiuntiva = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-aggiuntiva.csv')
+	agg = lastupd()
+	agg2 = date.datetime.now().strftime("%H:%M:%S")
 		
 def lastupd():
 	ultimo = requests.get('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/last-update-dataset.json').json()["ultimo_aggiornamento"]

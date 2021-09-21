@@ -541,9 +541,12 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac):
 def button(update,_: CallbackContext):
 	query = update.callback_query
 	if query.data[:1] != "V" and query.data[:1] != "F" and query.data[:1] != "R" and query.data[:1] != "D" and query.data[:1] != "A" and query.data != "Chiudi":
-		if query.data[:1] != "v" and query.data[:1] != "f" and query.data[:1] != "r" and query.data[:1] != "d" and query.data[:1] != "t"and query.data[:1] != "l":
+		if query.data[:1] != "v" and query.data[:1] != "f" and query.data[:1] != "r" and query.data[:1] != "d" and query.data[:1] != "t" and query.data[:1] != "l" and query.data[:1] != "a":
 			inf = query.data
 		else:
+			if query.data[:1] == "a":
+				global forceupd
+				forceupd = True
 			inf = query.data[1:]
 		if len(query.data.split(",")[3]) != 4 and len(query.data.split(",")[3]) != 6 and len(query.data.split(",")[4]) != 4 and len(query.data.split(",")[4]) != 6:
 			string = fascia(inf)
@@ -977,11 +980,19 @@ def button(update,_: CallbackContext):
 			],
 			]
 	elif query.data[:1] == "A":
-		keyboard = [
-		[
-				telegram.InlineKeyboardButton("Indietro", callback_data=query.data[1:]),
-		],
-		]
+		if cid != query.message.chat.id:
+			keyboard = [
+			[
+					telegram.InlineKeyboardButton("Indietro", callback_data=query.data[1:]),
+			],
+			]
+		else:
+			keyboard = [
+			[
+					telegram.InlineKeyboardButton("Aggiorna", callback_data="a" + query.data[1:]),
+					telegram.InlineKeyboardButton("Indietro", callback_data=query.data[1:]),
+			],
+			]
 		
 	elif query.data != "Chiudi":
 		if query.data[:1] == "*" or query.data[:1] == "-":
@@ -1021,7 +1032,7 @@ def button(update,_: CallbackContext):
 		],	
 		dat,
 		[
-			telegram.InlineKeyboardButton("Ultimo aggiornamento", callback_data='A' + query.data),
+			telegram.InlineKeyboardButton("Ultimo aggiornamento", callback_data='A' + inf),
 			telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
 		],
 		]
@@ -1080,6 +1091,8 @@ def tab():
 	global platea_dose_aggiuntiva
 	global agg
 	global agg2
+	global forceupd
+	forceupd = False
 	agg = ""
 	agg2 = ""
 	while True:
@@ -1089,7 +1102,11 @@ def tab():
 			platea_dose_aggiuntiva = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-aggiuntiva.csv')
 			agg = lastupd()
 		agg2 = date.datetime.now().strftime("%H:%M:%S")
-		time.sleep(60*60)
+		for _ in range(17):
+			if forceupd:
+				forceupd = False
+				break
+			time.sleep(5*60)
 		
 def lastupd():
 	ultimo = requests.get('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/last-update-dataset.json').json()["ultimo_aggiornamento"]

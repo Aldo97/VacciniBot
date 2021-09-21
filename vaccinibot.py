@@ -989,8 +989,8 @@ def button(update,_: CallbackContext):
 		else:
 			keyboard = [
 			[
-					telegram.InlineKeyboardButton("Aggiorna", callback_data="a" + query.data[1:]),
 					telegram.InlineKeyboardButton("Indietro", callback_data=query.data[1:]),
+					telegram.InlineKeyboardButton("Aggiorna", callback_data="a" + query.data[1:]),
 			],
 			]
 		

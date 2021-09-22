@@ -40,7 +40,7 @@ def help(update,context):
 		update.message.reply_text("Aggiungere al comando /help come argomento il comando interessato: vaccinati, riferimento\nSi ringraziano la Struttura Commissariale e l'ISTAT per i dati sui vaccini e la situazione demografica 2021\nHelp fatto di fretta, bot nelle fasi iniziali (ho poco tempo per migliorarlo, se volete dare suggerimenti usate il comando /segnalazione, ricordate che dovete avere un username!)")
 
 def convert_data(data):
-    return date.datetime.strptime(data, '%Y%m%d').strftime('%d %B %Y')
+	return date.datetime.strptime(data, '%Y%m%d').strftime('%d %B %Y')
     
 def segnalazione(update, context):
 	user = update.message.from_user
@@ -1065,23 +1065,23 @@ def change(inf,pos,campo,add):
 	return info
 	
 def extract(text, p):
-    return text.split()[p].strip()
+	return text.split()[p].strip()
 	
 def main():
-    upd = Updater(TOKEN, use_context=True)
-    disp = upd.dispatcher
+	upd = Updater(TOKEN, use_context=True)
+	disp = upd.dispatcher
 
-    locale.setlocale(locale.LC_ALL, "it_IT.utf8")
+	locale.setlocale(locale.LC_ALL, "it_IT.utf8")
 
-    disp.add_handler(CommandHandler("help", help))
-    disp.add_handler(CommandHandler("segnalazione", segnalazione))
-    disp.add_handler(CommandHandler("riferimento", riferimento))
-    disp.add_handler(CommandHandler("vaccinati", vaccinati))
-    disp.add_handler(CallbackQueryHandler(button))
+	disp.add_handler(CommandHandler("help", help))
+	disp.add_handler(CommandHandler("segnalazione", segnalazione))
+	disp.add_handler(CommandHandler("riferimento", riferimento))
+	disp.add_handler(CommandHandler("vaccinati", vaccinati))
+	disp.add_handler(CallbackQueryHandler(button))
 
-    upd.start_polling()
+	upd.start_polling()
 
-    upd.idle()
+	upd.idle()
    
 def tab():
 	global popo
@@ -1120,7 +1120,7 @@ def lastupd():
 	return ultimo[8:10] + "/" + ultimo[5:7] + "/" + ultimo[:4] + " alle " + ultimo[11:19]
     
 if __name__ == '__main__':
-    b = threading.Thread(name='backgroud', target=tab)
-    b.start()
-    
-    main()
+	b = threading.Thread(name='backgroud', target=tab)
+	b.start()
+
+	main()

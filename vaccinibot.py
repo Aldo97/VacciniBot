@@ -14,7 +14,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <https://www.gnu.org/licenses/>
     
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, CallbackContext
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler, CallbackContext
 import telegram
 import pandas as pd
 import datetime as date

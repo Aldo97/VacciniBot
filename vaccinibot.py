@@ -109,7 +109,10 @@ def somministrazioni(som,**kwargs):
 		som = som[som.fornitore == forn]
 	
 	if fascia:
-		som = som[som.fascia_anagrafica == fascia]
+		if fascia == "80+":
+			som = som[som.fascia_anagrafica == "80-89"].append(som[som.fascia_anagrafica == "90+"])
+		else:
+			som = som[som.fascia_anagrafica == fascia]
 		
 	sum=0
 	for i in som.prima_dose.tolist():
@@ -140,22 +143,32 @@ def somministrazioni(som,**kwargs):
 	else:
 		return sum,sum2,0,sumpre,sumpreJ
 		
-def pop(popo,**kwargs):
+def pop(plat,**kwargs):
 	fascia=kwargs.get('fascia',"tot")
 	reg=kwargs.get('reg',"Italia")
 	
 		
-	if reg == "Provincia Autonoma Bolzano / Bozen":
+	if reg == "Provincia Autonoma Bolzano / Bozen" and not plat:
 		reg = "Bolzano / Bozen"
-	elif reg == "Provincia Autonoma Trento":
+	elif reg == "Provincia Autonoma Bolzano / Bozen" and plat:
+		reg = "P.A. Bolzano"
+	elif reg == "Provincia Autonoma Trento" and not plat:
 		reg = "Trento"
+	elif reg == "Provincia Autonoma Trento" and plat:
+		reg = "P.A. Trento"
+	elif reg == "Valle d'Aosta / Vallée d'Aoste" and plat:
+		reg = "Valle d'Aosta"
 		
 	if fascia == False:
 		fascia = "tot"
 	if reg == False:
 		reg = "Italia"
+	if plat == "1":
+		return platea(file_platea,fascia,reg)
+	else:
+		return istat21(popo,fascia,reg)
 	
-		
+def istat21(popo,fascia,reg):
 	popo = popo[popo.Territorio == reg]
 	
 	sum = popo.loc[popo.fascia == fascia, "value"].tolist()[0]
@@ -167,6 +180,20 @@ def pop(popo,**kwargs):
 		sumV = 0
 		
 	return sum,sumV
+
+def platea(file_platea,fascia,reg):
+	if reg != "Italia":
+		file_platea = file_platea[file_platea.nome_area == reg]
+	
+	if fascia != "tot":
+		file_platea = file_platea[file_platea.fascia_anagrafica == fascia]
+	
+	sum = 0
+	for i in file_platea.totale_popolazione:
+		sum += i
+		
+	return sum,sum
+	
 
 def somm_d_a(som, **kwargs):
 	data1=kwargs.get('data1',False)
@@ -269,7 +296,7 @@ def vaccinati(update,CallbackContext):
 	
 	forn = "0"
 		
-	inf = "0," + "Italia" + "," + forn + "," + data1 + "," + data2
+	inf = "0," + "Italia" + "," + forn + "," + data1 + "," + data2 + ",0"
 	
 	if data2 != "0" and data2 != data1:
 		string = "Somministrazioni dal " + convert_data(data1) + " al " + convert_data(data2)
@@ -303,7 +330,8 @@ def fascia(info):
 	forn = info.split(",")[2]
 	data1 = info.split(",")[3]
 	data2 = info.split(",")[4]
-	
+	plat = info.split(",")[5]
+
 	mancanti = False
 	if fascia[:1] == "-":
 		fascia = fascia[1:]
@@ -333,6 +361,9 @@ def fascia(info):
 		vac = True
 	else:
 		vac = False
+		
+	if plat == "1" and fascia == "0":
+		vac = True
 		
 	if reg == "Friuli":
 		reg = "Friuli-Venezia Giulia"
@@ -374,14 +405,22 @@ def fascia(info):
 
 	if data2 == "0" or data2 == "False":
 		data2 = data1
-
+		
 	if data2 and data2 != data1:
 		string += "\ndal " + convert_data(data1) + " al " + convert_data(data2)
 	elif data1:
 		string += "\ndel " + convert_data(data1)
+		
+	if plat == "0":
+		string += "\nDati ISTAT21"
+	else:
+		string += "\nFile PLATEA"
 
 	if fascia == "60" and sommafascia == False:
-		fascia = "60-69 70-79 80-89 90+"
+		if plat == "0":
+			fascia = "60-69 70-79 80-89 90+"
+		else:
+			fascia = "60-69 70-79 80+"
 		string += "\nOver 60"
 	elif fascia == "59" and sommafascia == False:
 		fascia = "12-19 20-29 30-39 40-49 50-59"
@@ -391,7 +430,7 @@ def fascia(info):
 		string += "\nUnder 30"
 	
 	if sommafascia:
-		return sommfascia(string,reg,forn,data1,data2)
+		return sommfascia(string,reg,forn,data1,data2,plat)
 	elif fasciaavaccini:
 		if len(fascia.split()) == 1 and fascia != "0":
 			string += "\nFascia " + fascia
@@ -399,9 +438,9 @@ def fascia(info):
 			string += "\nPopolazione generale"
 		elif vac == True:
 			string += "\nPopolazione vaccinabile"
-		return fasciavaccini(string,reg,fascia,data1,data2,vac)
+		return fasciavaccini(string,reg,fascia,data1,data2,vac,plat)
 	elif vacciniafascia:
-		return vaccinifascia(string,reg,forn,data1,data2,prime)
+		return vaccinifascia(string,reg,forn,data1,data2,prime,plat)
 		
 	som1=0
 	som2=0
@@ -415,7 +454,7 @@ def fascia(info):
 			i = False
 			fascia = False
 		u,d,g,p,k = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
-		t,tv = pop(popo,reg=reg,fascia=i)
+		t,tv = pop(plat,reg=reg,fascia=i)
 		som1 += u
 		som2 += d
 		somJ += g
@@ -474,13 +513,15 @@ def fascia(info):
 	
 	return string
 	
-def vaccinifascia(string,reg,forn,data1,data2,prime):
-	fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
-	
+def vaccinifascia(string,reg,forn,data1,data2,prime,plat):
+	if plat == "0":
+		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
+	else:
+		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	string += "\n"
 	for i in fascia.split():
 		som1,som2,somJ,sompre,sompreJ = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
-		po, _ = pop(popo,reg=reg,fascia=i)
+		po, _ = pop(plat,reg=reg,fascia=i)
 		if prime:
 			string += "\nVaccinati con almeno 1 dose fascia " + i + "\n" + bar(som1+somJ,po,nextended=True)
 		else:
@@ -489,8 +530,11 @@ def vaccinifascia(string,reg,forn,data1,data2,prime):
 			string += "\nCompletamente immunizzati fascia " + i + "\n" + bar(som2+somJ-sompreJ,po,nextended=True)
 	return string
 
-def sommfascia(string,reg,forn,data1,data2):
-	fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
+def sommfascia(string,reg,forn,data1,data2,plat):
+	if plat == "0":
+		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
+	else:
+		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	s=[]
 	for i in fascia.split():
 		som1,som2,somJ,sompre,sompreJ = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
@@ -504,12 +548,12 @@ def sommfascia(string,reg,forn,data1,data2):
 		
 	return string
 	
-def fasciavaccini(string,reg,fascia,data1,data2,vac):
+def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 	forn =["Pfizer/BioNTech","Moderna","Vaxzevria (AstraZeneca)","Janssen"]
 	string +="\n"
 	
 	if fascia == "0":
-		po,pov = pop(popo,reg=reg)
+		po,pov = pop(plat,reg=reg)
 		if vac:
 			po = pov
 		for i in forn:
@@ -527,7 +571,7 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac):
 		data.append(s)
 		
 	for k in fascia.split():	
-		po,_ = pop(popo,reg=reg,fascia=k)
+		po,_ = pop(plat,reg=reg,fascia=k)
 		popol.append(po)
 	po=sum(popol)
 	tot=0
@@ -548,6 +592,19 @@ def button(update,_: CallbackContext):
 				forceupd()
 			inf = query.data[1:]
 		if len(query.data.split(",")[3]) != 4 and len(query.data.split(",")[3]) != 6 and len(query.data.split(",")[4]) != 4 and len(query.data.split(",")[4]) != 6:
+			try:
+				float(inf[:1])
+			except ValueError:
+				segno = inf[:1]
+				inf = inf[1:]
+				
+			if inf.split(",")[5] == "0" and inf.split(",")[0] == "80+":
+				inf = change(inf,0,"80-89",False)
+			elif inf.split(",")[5] == "1" and ( inf.split(",")[0] == "80-89" or inf.split(",")[0] == "90+" ):
+				inf = change(inf,0,"80+",False)
+			
+			if 'segno' in locals():
+				inf = segno + inf
 			string = fascia(inf)
 		else:
 			if len(query.data.split(",")[3]) == 4:
@@ -631,6 +688,25 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Indietro", callback_data=segno + inf),
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data='f' + inf),
 			]
+		if query.data.split(",")[5] == "0":
+			over70 = [
+			telegram.InlineKeyboardButton("70-79", callback_data='f' + segno + change(inf,0,"70-79",False)),
+			telegram.InlineKeyboardButton("80-89", callback_data='f' + segno + change(inf,0,"80-89",False)),
+			telegram.InlineKeyboardButton("90+", callback_data='f' + segno + change(inf,0,"90+",False)),
+			]
+			
+			plat = [
+			telegram.InlineKeyboardButton("Popolazione generale", callback_data='f' + segno + change(inf,0,"0",False)), 
+			telegram.InlineKeyboardButton("Popolazione vaccinabile", callback_data='f' + segno + change(inf,0,"1",False)),
+			]
+		else:
+			over70 =[
+			telegram.InlineKeyboardButton("70-79", callback_data='f' + segno + change(inf,0,"70-79",False)),
+			telegram.InlineKeyboardButton("80+", callback_data='f' + segno + change(inf,0,"80+",False)),
+			telegram.InlineKeyboardButton("Over 12", callback_data='f' + segno + change(inf,0,"1",False))
+			]
+			
+			plat = []
 
 		keyboard = [
 		[
@@ -643,21 +719,13 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("50-59", callback_data='f' + segno + change(inf,0,"50-59",False)),
 			telegram.InlineKeyboardButton("60-69", callback_data='f' + segno + change(inf,0,"60-69",False)),
 		],
-		[
-			telegram.InlineKeyboardButton("70-79", callback_data='f' + segno + change(inf,0,"70-79",False)),
-			telegram.InlineKeyboardButton("80-89", callback_data='f' + segno + change(inf,0,"80-89",False)),
-			telegram.InlineKeyboardButton("90+", callback_data='f' + segno + change(inf,0,"90+",False)),
-		],
+			over70,
 		[
 			telegram.InlineKeyboardButton("Over 60", callback_data='f' + segno + change(inf,0,"60",False)),
 			telegram.InlineKeyboardButton("Under 60", callback_data='f' + segno + change(inf,0,"59",False)),
 			telegram.InlineKeyboardButton("Under 30", callback_data='f' + segno + change(inf,0,"30",False)),
-			
 		],
-		[
-			telegram.InlineKeyboardButton("Popolazione generale", callback_data='f' + segno + change(inf,0,"0",False)), 
-			telegram.InlineKeyboardButton("Popolazione vaccinabile", callback_data='f' + segno + change(inf,0,"1",False)),
-		],
+			plat,
 			sufascia,
 		[
 			telegram.InlineKeyboardButton("Chiudi", callback_data="Chiudi"),
@@ -1023,12 +1091,17 @@ def button(update,_: CallbackContext):
 				]
 		else:
 			dat = []
+		
+		if query.data.split(",")[5] == "0":
+			plat = telegram.InlineKeyboardButton("Usa PLATEA", callback_data=segno + change(inf,5,"1",False))
+		else:
+			plat = telegram.InlineKeyboardButton("Usa ISTAT21", callback_data=segno + change(inf,5,"0",False))
 			
 		keyboard = [
 		tastiera,
 		[
-			telegram.InlineKeyboardButton("Reset popolazione generale", callback_data=change(change(change(inf,0,"0",False),1,"0",False),2,"0",False)),
 			telegram.InlineKeyboardButton("Reset popolazione vaccinabile", callback_data=change(change(change(inf,0,"1",False),1,"0",False),2,"0",False)),
+			plat,
 		],	
 		dat,
 		[
@@ -1059,7 +1132,7 @@ def change(inf,pos,campo,add):
 			info += campo
 		else:
 			info += inf.split(",")[k]
-		if k != 4:
+		if k != 5:
 			info += ","
 		k += 1
 	return info
@@ -1088,6 +1161,7 @@ def tab():
 	popo = pd.read_csv("istat21.csv")
 	global somministrate
 	global distribuite
+	global file_platea
 	global platea_dose_aggiuntiva
 	global agg
 	global agg2
@@ -1097,6 +1171,7 @@ def tab():
 		if agg != lastupd():
 			somministrate = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-latest.csv')
 			distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
+			file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
 			platea_dose_aggiuntiva = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-aggiuntiva.csv')
 			agg = lastupd()
 		agg2 = date.datetime.now().strftime("%H:%M:%S")
@@ -1105,12 +1180,14 @@ def tab():
 def forceupd():
 	global somministrate
 	global distribuite
+	global file_platea
 	global platea_dose_aggiuntiva
 	global agg
 	global agg2	
 
 	somministrate = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-latest.csv')
 	distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
+	file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
 	platea_dose_aggiuntiva = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-aggiuntiva.csv')
 	agg = lastupd()
 	agg2 = date.datetime.now().strftime("%H:%M:%S")

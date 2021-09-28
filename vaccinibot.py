@@ -32,12 +32,12 @@ def help(update,context):
 	if len(update.message.text.split()) == 2:
 		if extract(update.message.text,1) == "vaccinati":
 			update.message.reply_text("Funzione sperimentale, due modalità di utilizzo:\n-Senza argomento viene proposto un messaggio interattivo in cui è possibile variare fra le varie regioni, fasce di età e tipo di vaccino somministrato.\n-Come sopra ma con una o due date inserite come argomento (il funzionamento è il medesimo di /somministrazioni)")
-		elif extract(update.message.text,1) == "riferimento":
+		elif extract(update.message.text,1) == "istat21":
 			update.message.reply_text("Tre modalità di utilizzo:\n-Senza argomenti restituisce la popolazione residente in Italia secondo i dati ISTAT21 divisi in fasce di età\n-Con argomento il nome di una regione(seguendo le regole del comando somministrazioni) vengono restituite le fasce di età secondo ISTAT21 relative alla regione immessa\nCon argomento 'download' il bot invierà il file csv con i dati ISTAT21 divisi in fasce di età usati dallo stesso.")
 	elif len(update.message.text.split()) > 2:
 		update.message.reply_text("Troppi argomenti! Scrivere inviare solo /help per maggiori informazioni")
 	else:
-		update.message.reply_text("Aggiungere al comando /help come argomento il comando interessato: vaccinati, riferimento\nSi ringraziano la Struttura Commissariale e l'ISTAT per i dati sui vaccini e la situazione demografica 2021\nHelp fatto di fretta, bot nelle fasi iniziali (ho poco tempo per migliorarlo, se volete dare suggerimenti usate il comando /segnalazione, ricordate che dovete avere un username!)")
+		update.message.reply_text("Aggiungere al comando /help come argomento il comando interessato: vaccinati, istat21\nSi ringraziano la Struttura Commissariale e l'ISTAT per i dati sui vaccini e la situazione demografica 2021\nHelp fatto di fretta, bot nelle fasi iniziali (ho poco tempo per migliorarlo, se volete dare suggerimenti usate il comando /segnalazione, ricordate che dovete avere un username!)")
 
 def convert_data(data):
 	return date.datetime.strptime(data, '%Y%m%d').strftime('%d %B %Y')
@@ -235,7 +235,7 @@ def platea_d_a(platea,**kwargs):
 	
 	return popolazione
 
-def riferimento(update,context):
+def istat21_show(update,context):
 	if len(update.message.text.split()) == 2:
 		reg = extract(update.message.text,1)
 		if extract(update.message.text,1) == "download":
@@ -1147,7 +1147,7 @@ def main():
 
 	disp.add_handler(CommandHandler("help", help))
 	disp.add_handler(CommandHandler("segnalazione", segnalazione))
-	disp.add_handler(CommandHandler("riferimento", riferimento))
+	disp.add_handler(CommandHandler("istat21", istat21_show))
 	disp.add_handler(CommandHandler("vaccinati", vaccinati))
 	disp.add_handler(CallbackQueryHandler(button))
 

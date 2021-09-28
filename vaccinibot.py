@@ -1149,6 +1149,7 @@ def main():
 	disp.add_handler(CommandHandler("segnalazione", segnalazione))
 	disp.add_handler(CommandHandler("istat21", istat21_show))
 	disp.add_handler(CommandHandler("vaccinati", vaccinati))
+	disp.add_handler(CommandHandler("start", vaccinati))
 	disp.add_handler(CallbackQueryHandler(button))
 
 	upd.start_polling()

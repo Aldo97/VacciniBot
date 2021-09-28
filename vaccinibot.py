@@ -166,16 +166,16 @@ def pop(plat,**kwargs):
 	if plat == "1":
 		return platea(file_platea,fascia,reg)
 	else:
-		return istat21(popo,fascia,reg)
+		return istat21(dati_istat21,fascia,reg)
 	
-def istat21(popo,fascia,reg):
-	popo = popo[popo.Territorio == reg]
+def istat21(dati_istat21,fascia,reg):
+	dati_istat21 = dati_istat21[dati_istat21.Territorio == reg]
 	
-	sum = popo.loc[popo.fascia == fascia, "value"].tolist()[0]
+	sum = dati_istat21.loc[dati_istat21.fascia == fascia, "value"].tolist()[0]
 	
 	if fascia == "tot":
 		sumN = 0
-		sumV = sum - popo.loc[popo.fascia == "0-11", "value"].tolist()[0]
+		sumV = sum - dati_istat21.loc[dati_istat21.fascia == "0-11", "value"].tolist()[0]
 	else:
 		sumV = 0
 		
@@ -193,7 +193,6 @@ def platea(file_platea,fascia,reg):
 		sum += i
 		
 	return sum,sum
-	
 
 def somm_d_a(som, **kwargs):
 	data1=kwargs.get('data1',False)
@@ -240,8 +239,8 @@ def riferimento(update,context):
 	if len(update.message.text.split()) == 2:
 		reg = extract(update.message.text,1)
 		if extract(update.message.text,1) == "download":
-			file = open("istat21.csv")
-			context.bot.sendDocument(chat_id=update.message.chat.id,document=file)
+			file = requests.get("https://raw.githubusercontent.com/Aldo97/VacciniBot/main/istat21.csv")
+			context.bot.sendDocument(chat_id=update.message.chat.id,document=file.content,filename="istat21.csv")
 			return
 	elif len(update.message.text.split()) == 1:
 		reg = "Italia"
@@ -255,7 +254,7 @@ def riferimento(update,context):
 		
 	fascia = ["0-11","12-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"]
 	
-	pop = popo[popo.Territorio == reg]
+	pop = dati_istat21[dati_istat21.Territorio == reg]
 	
 	string = reg + "\nPopolazione di riferimento (ISTAT21)"
 	
@@ -1157,16 +1156,16 @@ def main():
 	upd.idle()
    
 def tab():
-	global popo
-	popo = pd.read_csv("istat21.csv")
 	global somministrate
 	global distribuite
 	global file_platea
+	global dati_istat21
 	global platea_dose_aggiuntiva
 	global agg
 	global agg2
 	agg = ""
 	agg2 = ""
+	dati_istat21 = pd.read_csv('https://raw.githubusercontent.com/Aldo97/VacciniBot/main/istat21.csv')
 	while True:
 		if agg != lastupd():
 			somministrate = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-latest.csv')

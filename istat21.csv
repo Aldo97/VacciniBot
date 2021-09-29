@@ -1,243 +1,243 @@
-,Territorio,fascia,value
-0,Italia,0-11,5858324
-0,Italia,12-19,4556922
-0,Italia,20-29,6041667
-0,Italia,30-39,6747378
-0,Italia,40-49,8700035
-0,Italia,50-59,9466362
-0,Italia,60-69,7441208
-0,Italia,70-79,5965244
-0,Italia,80-89,3665286
-0,Italia,90+,815140
-0,Italia,tot,59257566
-0,Abruzzo,0-11,120610
-0,Abruzzo,12-19,92568
-0,Abruzzo,20-29,128330
-0,Abruzzo,30-39,148176
-0,Abruzzo,40-49,185634
-0,Abruzzo,50-59,204504
-0,Abruzzo,60-69,168878
-0,Abruzzo,70-79,131536
-0,Abruzzo,80-89,84626
-0,Abruzzo,90+,20394
-0,Abruzzo,tot,1285256
-0,Basilicata,0-11,48622
-0,Basilicata,12-19,41004
-0,Basilicata,20-29,59650
-0,Basilicata,30-39,64519
-0,Basilicata,40-49,76260
-0,Basilicata,50-59,87305
-0,Basilicata,60-69,73674
-0,Basilicata,70-79,52557
-0,Basilicata,80-89,35786
-0,Basilicata,90+,8202
-0,Basilicata,tot,547579
-0,Bolzano / Bozen,0-11,65516
-0,Bolzano / Bozen,12-19,46097
-0,Bolzano / Bozen,20-29,61426
-0,Bolzano / Bozen,30-39,62922
-0,Bolzano / Bozen,40-49,74006
-0,Bolzano / Bozen,50-59,84510
-0,Bolzano / Bozen,60-69,58814
-0,Bolzano / Bozen,70-79,46424
-0,Bolzano / Bozen,80-89,27677
-0,Bolzano / Bozen,90+,6323
-0,Bolzano / Bozen,tot,533715
-0,Calabria,0-11,189111
-0,Calabria,12-19,146828
-0,Calabria,20-29,208920
-0,Calabria,30-39,232935
-0,Calabria,40-49,261369
-0,Calabria,50-59,284757
-0,Calabria,60-69,243667
-0,Calabria,70-79,177666
-0,Calabria,80-89,108240
-0,Calabria,90+,24235
-0,Calabria,tot,1877728
-0,Campania,0-11,614271
-0,Campania,12-19,500450
-0,Campania,20-29,685126
-0,Campania,30-39,706752
-0,Campania,40-49,819391
-0,Campania,50-59,871123
-0,Campania,60-69,681008
-0,Campania,70-79,491191
-0,Campania,80-89,258456
-0,Campania,90+,51991
-0,Campania,tot,5679759
-0,Emilia-Romagna,0-11,439909
-0,Emilia-Romagna,12-19,327229
-0,Emilia-Romagna,20-29,420475
-0,Emilia-Romagna,30-39,495231
-0,Emilia-Romagna,40-49,674865
-0,Emilia-Romagna,50-59,712475
-0,Emilia-Romagna,60-69,549321
-0,Emilia-Romagna,70-79,454505
-0,Emilia-Romagna,80-89,299028
-0,Emilia-Romagna,90+,72511
-0,Emilia-Romagna,tot,4445549
-0,Friuli-Venezia Giulia,0-11,108079
-0,Friuli-Venezia Giulia,12-19,84835
-0,Friuli-Venezia Giulia,20-29,109577
-0,Friuli-Venezia Giulia,30-39,123868
-0,Friuli-Venezia Giulia,40-49,172496
-0,Friuli-Venezia Giulia,50-59,197534
-0,Friuli-Venezia Giulia,60-69,156447
-0,Friuli-Venezia Giulia,70-79,140238
-0,Friuli-Venezia Giulia,80-89,85322
-0,Friuli-Venezia Giulia,90+,20357
-0,Friuli-Venezia Giulia,tot,1198753
-0,Lazio,0-11,573233
-0,Lazio,12-19,431221
-0,Lazio,20-29,558855
-0,Lazio,30-39,665641
-0,Lazio,40-49,879906
-0,Lazio,50-59,940470
-0,Lazio,60-69,707706
-0,Lazio,70-79,551477
-0,Lazio,80-89,338530
-0,Lazio,90+,73757
-0,Lazio,tot,5720796
-0,Liguria,0-11,125739
-0,Liguria,12-19,101627
-0,Liguria,20-29,136820
-0,Liguria,30-39,147115
-0,Liguria,40-49,203007
-0,Liguria,50-59,253220
-0,Liguria,60-69,203505
-0,Liguria,70-79,182496
-0,Liguria,80-89,125677
-0,Liguria,90+,30599
-0,Liguria,tot,1509805
-0,Lombardia,0-11,1022605
-0,Lombardia,12-19,769069
-0,Lombardia,20-29,983209
-0,Lombardia,30-39,1145186
-0,Lombardia,40-49,1504315
-0,Lombardia,50-59,1609940
-0,Lombardia,60-69,1201057
-0,Lombardia,70-79,988111
-0,Lombardia,80-89,615067
-0,Lombardia,90+,128433
-0,Lombardia,tot,9966992
-0,Marche,0-11,141802
-0,Marche,12-19,110108
-0,Marche,20-29,145997
-0,Marche,30-39,163324
-0,Marche,40-49,218851
-0,Marche,50-59,236599
-0,Marche,60-69,194699
-0,Marche,70-79,156000
-0,Marche,80-89,108153
-0,Marche,90+,25873
-0,Marche,tot,1501406
-0,Molise,0-11,25237
-0,Molise,12-19,20520
-0,Molise,20-29,31281
-0,Molise,30-39,33973
-0,Molise,40-49,41036
-0,Molise,50-59,46916
-0,Molise,60-69,40784
-0,Molise,70-79,30617
-0,Molise,80-89,20753
-0,Molise,90+,5430
-0,Molise,tot,296547
-0,Piemonte,0-11,398343
-0,Piemonte,12-19,306962
-0,Piemonte,20-29,404501
-0,Piemonte,30-39,453297
-0,Piemonte,40-49,612180
-0,Piemonte,50-59,692135
-0,Piemonte,60-69,559966
-0,Piemonte,70-79,473035
-0,Piemonte,80-89,307031
-0,Piemonte,90+,65760
-0,Piemonte,tot,4273210
-0,Puglia,0-11,381375
-0,Puglia,12-19,315971
-0,Puglia,20-29,435687
-0,Puglia,30-39,453251
-0,Puglia,40-49,570896
-0,Puglia,50-59,607181
-0,Puglia,60-69,494337
-0,Puglia,70-79,395276
-0,Puglia,80-89,224826
-0,Puglia,90+,48131
-0,Puglia,tot,3926931
-0,Sardegna,0-11,132050
-0,Sardegna,12-19,107888
-0,Sardegna,20-29,149270
-0,Sardegna,30-39,180864
-0,Sardegna,40-49,244621
-0,Sardegna,50-59,266104
-0,Sardegna,60-69,225334
-0,Sardegna,70-79,172099
-0,Sardegna,80-89,97957
-0,Sardegna,90+,22038
-0,Sardegna,tot,1598225
-0,Sicilia,0-11,504267
-0,Sicilia,12-19,398061
-0,Sicilia,20-29,551159
-0,Sicilia,30-39,581042
-0,Sicilia,40-49,684564
-0,Sicilia,50-59,732410
-0,Sicilia,60-69,608346
-0,Sicilia,70-79,460198
-0,Sicilia,80-89,265138
-0,Sicilia,90+,55691
-0,Sicilia,tot,4840876
-0,Toscana,0-11,338714
-0,Toscana,12-19,265297
-0,Toscana,20-29,338693
-0,Toscana,30-39,395198
-0,Toscana,40-49,540242
-0,Toscana,50-59,590377
-0,Toscana,60-69,467270
-0,Toscana,70-79,406475
-0,Toscana,80-89,263150
-0,Toscana,90+,62917
-0,Toscana,tot,3668333
-0,Trento,0-11,58871
-0,Trento,12-19,44711
-0,Trento,20-29,58234
-0,Trento,30-39,61070
-0,Trento,40-49,76322
-0,Trento,50-59,86000
-0,Trento,60-69,67987
-0,Trento,70-79,52872
-0,Trento,80-89,30673
-0,Trento,90+,8005
-0,Trento,tot,544745
-0,Umbria,0-11,79780
-0,Umbria,12-19,62999
-0,Umbria,20-29,81178
-0,Umbria,30-39,95565
-0,Umbria,40-49,124859
-0,Umbria,50-59,135406
-0,Umbria,60-69,111650
-0,Umbria,70-79,94797
-0,Umbria,80-89,63188
-0,Umbria,90+,15591
-0,Umbria,tot,865013
-0,Valle d'Aosta / Vallée d'Aoste,0-11,12043
-0,Valle d'Aosta / Vallée d'Aoste,12-19,9436
-0,Valle d'Aosta / Vallée d'Aoste,20-29,11940
-0,Valle d'Aosta / Vallée d'Aoste,30-39,13010
-0,Valle d'Aosta / Vallée d'Aoste,40-49,17884
-0,Valle d'Aosta / Vallée d'Aoste,50-59,20922
-0,Valle d'Aosta / Vallée d'Aoste,60-69,16123
-0,Valle d'Aosta / Vallée d'Aoste,70-79,12953
-0,Valle d'Aosta / Vallée d'Aoste,80-89,7803
-0,Valle d'Aosta / Vallée d'Aoste,90+,1781
-0,Valle d'Aosta / Vallée d'Aoste,tot,123895
-0,Veneto,0-11,478147
-0,Veneto,12-19,374041
-0,Veneto,20-29,481339
-0,Veneto,30-39,524439
-0,Veneto,40-49,717331
-0,Veneto,50-59,806474
-0,Veneto,60-69,610635
-0,Veneto,70-79,494721
-0,Veneto,80-89,298205
-0,Veneto,90+,67121
-0,Veneto,tot,4852453
+,area,Territorio,fascia,value
+0,IT,Italia,0-11,5858324
+1,IT,Italia,12-19,4556922
+2,IT,Italia,20-29,6041667
+3,IT,Italia,30-39,6747378
+4,IT,Italia,40-49,8700035
+5,IT,Italia,50-59,9466362
+6,IT,Italia,60-69,7441208
+7,IT,Italia,70-79,5965244
+8,IT,Italia,80-89,3665286
+9,IT,Italia,90+,815140
+10,IT,Italia,tot,59257566
+11,ABR,Abruzzo,0-11,120610
+12,ABR,Abruzzo,12-19,92568
+13,ABR,Abruzzo,20-29,128330
+14,ABR,Abruzzo,30-39,148176
+15,ABR,Abruzzo,40-49,185634
+16,ABR,Abruzzo,50-59,204504
+17,ABR,Abruzzo,60-69,168878
+18,ABR,Abruzzo,70-79,131536
+19,ABR,Abruzzo,80-89,84626
+20,ABR,Abruzzo,90+,20394
+21,ABR,Abruzzo,tot,1285256
+22,BAS,Basilicata,0-11,48622
+23,BAS,Basilicata,12-19,41004
+24,BAS,Basilicata,20-29,59650
+25,BAS,Basilicata,30-39,64519
+26,BAS,Basilicata,40-49,76260
+27,BAS,Basilicata,50-59,87305
+28,BAS,Basilicata,60-69,73674
+29,BAS,Basilicata,70-79,52557
+30,BAS,Basilicata,80-89,35786
+31,BAS,Basilicata,90+,8202
+32,BAS,Basilicata,tot,547579
+33,PAB,Bolzano / Bozen,0-11,65516
+34,PAB,Bolzano / Bozen,12-19,46097
+35,PAB,Bolzano / Bozen,20-29,61426
+36,PAB,Bolzano / Bozen,30-39,62922
+37,PAB,Bolzano / Bozen,40-49,74006
+38,PAB,Bolzano / Bozen,50-59,84510
+39,PAB,Bolzano / Bozen,60-69,58814
+40,PAB,Bolzano / Bozen,70-79,46424
+41,PAB,Bolzano / Bozen,80-89,27677
+42,PAB,Bolzano / Bozen,90+,6323
+43,PAB,Bolzano / Bozen,tot,533715
+44,CAL,Calabria,0-11,189111
+45,CAL,Calabria,12-19,146828
+46,CAL,Calabria,20-29,208920
+47,CAL,Calabria,30-39,232935
+48,CAL,Calabria,40-49,261369
+49,CAL,Calabria,50-59,284757
+50,CAL,Calabria,60-69,243667
+51,CAL,Calabria,70-79,177666
+52,CAL,Calabria,80-89,108240
+53,CAL,Calabria,90+,24235
+54,CAL,Calabria,tot,1877728
+55,CAM,Campania,0-11,614271
+56,CAM,Campania,12-19,500450
+57,CAM,Campania,20-29,685126
+58,CAM,Campania,30-39,706752
+59,CAM,Campania,40-49,819391
+60,CAM,Campania,50-59,871123
+61,CAM,Campania,60-69,681008
+62,CAM,Campania,70-79,491191
+63,CAM,Campania,80-89,258456
+64,CAM,Campania,90+,51991
+65,CAM,Campania,tot,5679759
+66,EMR,Emilia-Romagna,0-11,439909
+67,EMR,Emilia-Romagna,12-19,327229
+68,EMR,Emilia-Romagna,20-29,420475
+69,EMR,Emilia-Romagna,30-39,495231
+70,EMR,Emilia-Romagna,40-49,674865
+71,EMR,Emilia-Romagna,50-59,712475
+72,EMR,Emilia-Romagna,60-69,549321
+73,EMR,Emilia-Romagna,70-79,454505
+74,EMR,Emilia-Romagna,80-89,299028
+75,EMR,Emilia-Romagna,90+,72511
+76,EMR,Emilia-Romagna,tot,4445549
+77,FVG,Friuli-Venezia Giulia,0-11,108079
+78,FVG,Friuli-Venezia Giulia,12-19,84835
+79,FVG,Friuli-Venezia Giulia,20-29,109577
+80,FVG,Friuli-Venezia Giulia,30-39,123868
+81,FVG,Friuli-Venezia Giulia,40-49,172496
+82,FVG,Friuli-Venezia Giulia,50-59,197534
+83,FVG,Friuli-Venezia Giulia,60-69,156447
+84,FVG,Friuli-Venezia Giulia,70-79,140238
+85,FVG,Friuli-Venezia Giulia,80-89,85322
+86,FVG,Friuli-Venezia Giulia,90+,20357
+87,FVG,Friuli-Venezia Giulia,tot,1198753
+88,LAZ,Lazio,0-11,573233
+89,LAZ,Lazio,12-19,431221
+90,LAZ,Lazio,20-29,558855
+91,LAZ,Lazio,30-39,665641
+92,LAZ,Lazio,40-49,879906
+93,LAZ,Lazio,50-59,940470
+94,LAZ,Lazio,60-69,707706
+95,LAZ,Lazio,70-79,551477
+96,LAZ,Lazio,80-89,338530
+97,LAZ,Lazio,90+,73757
+98,LAZ,Lazio,tot,5720796
+99,LIG,Liguria,0-11,125739
+100,LIG,Liguria,12-19,101627
+101,LIG,Liguria,20-29,136820
+102,LIG,Liguria,30-39,147115
+103,LIG,Liguria,40-49,203007
+104,LIG,Liguria,50-59,253220
+105,LIG,Liguria,60-69,203505
+106,LIG,Liguria,70-79,182496
+107,LIG,Liguria,80-89,125677
+108,LIG,Liguria,90+,30599
+109,LIG,Liguria,tot,1509805
+110,LOM,Lombardia,0-11,1022605
+111,LOM,Lombardia,12-19,769069
+112,LOM,Lombardia,20-29,983209
+113,LOM,Lombardia,30-39,1145186
+114,LOM,Lombardia,40-49,1504315
+115,LOM,Lombardia,50-59,1609940
+116,LOM,Lombardia,60-69,1201057
+117,LOM,Lombardia,70-79,988111
+118,LOM,Lombardia,80-89,615067
+119,LOM,Lombardia,90+,128433
+120,LOM,Lombardia,tot,9966992
+121,MAR,Marche,0-11,141802
+122,MAR,Marche,12-19,110108
+123,MAR,Marche,20-29,145997
+124,MAR,Marche,30-39,163324
+125,MAR,Marche,40-49,218851
+126,MAR,Marche,50-59,236599
+127,MAR,Marche,60-69,194699
+128,MAR,Marche,70-79,156000
+129,MAR,Marche,80-89,108153
+130,MAR,Marche,90+,25873
+131,MAR,Marche,tot,1501406
+132,MOL,Molise,0-11,25237
+133,MOL,Molise,12-19,20520
+134,MOL,Molise,20-29,31281
+135,MOL,Molise,30-39,33973
+136,MOL,Molise,40-49,41036
+137,MOL,Molise,50-59,46916
+138,MOL,Molise,60-69,40784
+139,MOL,Molise,70-79,30617
+140,MOL,Molise,80-89,20753
+141,MOL,Molise,90+,5430
+142,MOL,Molise,tot,296547
+143,PIE,Piemonte,0-11,398343
+144,PIE,Piemonte,12-19,306962
+145,PIE,Piemonte,20-29,404501
+146,PIE,Piemonte,30-39,453297
+147,PIE,Piemonte,40-49,612180
+148,PIE,Piemonte,50-59,692135
+149,PIE,Piemonte,60-69,559966
+150,PIE,Piemonte,70-79,473035
+151,PIE,Piemonte,80-89,307031
+152,PIE,Piemonte,90+,65760
+153,PIE,Piemonte,tot,4273210
+154,PUG,Puglia,0-11,381375
+155,PUG,Puglia,12-19,315971
+156,PUG,Puglia,20-29,435687
+157,PUG,Puglia,30-39,453251
+158,PUG,Puglia,40-49,570896
+159,PUG,Puglia,50-59,607181
+160,PUG,Puglia,60-69,494337
+161,PUG,Puglia,70-79,395276
+162,PUG,Puglia,80-89,224826
+163,PUG,Puglia,90+,48131
+164,PUG,Puglia,tot,3926931
+165,SAR,Sardegna,0-11,132050
+166,SAR,Sardegna,12-19,107888
+167,SAR,Sardegna,20-29,149270
+168,SAR,Sardegna,30-39,180864
+169,SAR,Sardegna,40-49,244621
+170,SAR,Sardegna,50-59,266104
+171,SAR,Sardegna,60-69,225334
+172,SAR,Sardegna,70-79,172099
+173,SAR,Sardegna,80-89,97957
+174,SAR,Sardegna,90+,22038
+175,SAR,Sardegna,tot,1598225
+176,SIC,Sicilia,0-11,504267
+177,SIC,Sicilia,12-19,398061
+178,SIC,Sicilia,20-29,551159
+179,SIC,Sicilia,30-39,581042
+180,SIC,Sicilia,40-49,684564
+181,SIC,Sicilia,50-59,732410
+182,SIC,Sicilia,60-69,608346
+183,SIC,Sicilia,70-79,460198
+184,SIC,Sicilia,80-89,265138
+185,SIC,Sicilia,90+,55691
+186,SIC,Sicilia,tot,4840876
+187,TOS,Toscana,0-11,338714
+188,TOS,Toscana,12-19,265297
+189,TOS,Toscana,20-29,338693
+190,TOS,Toscana,30-39,395198
+191,TOS,Toscana,40-49,540242
+192,TOS,Toscana,50-59,590377
+193,TOS,Toscana,60-69,467270
+194,TOS,Toscana,70-79,406475
+195,TOS,Toscana,80-89,263150
+196,TOS,Toscana,90+,62917
+197,TOS,Toscana,tot,3668333
+198,PAT,Trento,0-11,58871
+199,PAT,Trento,12-19,44711
+200,PAT,Trento,20-29,58234
+201,PAT,Trento,30-39,61070
+202,PAT,Trento,40-49,76322
+203,PAT,Trento,50-59,86000
+204,PAT,Trento,60-69,67987
+205,PAT,Trento,70-79,52872
+206,PAT,Trento,80-89,30673
+207,PAT,Trento,90+,8005
+208,PAT,Trento,tot,544745
+209,UMB,Umbria,0-11,79780
+210,UMB,Umbria,12-19,62999
+211,UMB,Umbria,20-29,81178
+212,UMB,Umbria,30-39,95565
+213,UMB,Umbria,40-49,124859
+214,UMB,Umbria,50-59,135406
+215,UMB,Umbria,60-69,111650
+216,UMB,Umbria,70-79,94797
+217,UMB,Umbria,80-89,63188
+218,UMB,Umbria,90+,15591
+219,UMB,Umbria,tot,865013
+220,VDA,Valle d'Aosta / Vallée d'Aoste,0-11,12043
+221,VDA,Valle d'Aosta / Vallée d'Aoste,12-19,9436
+222,VDA,Valle d'Aosta / Vallée d'Aoste,20-29,11940
+223,VDA,Valle d'Aosta / Vallée d'Aoste,30-39,13010
+224,VDA,Valle d'Aosta / Vallée d'Aoste,40-49,17884
+225,VDA,Valle d'Aosta / Vallée d'Aoste,50-59,20922
+226,VDA,Valle d'Aosta / Vallée d'Aoste,60-69,16123
+227,VDA,Valle d'Aosta / Vallée d'Aoste,70-79,12953
+228,VDA,Valle d'Aosta / Vallée d'Aoste,80-89,7803
+229,VDA,Valle d'Aosta / Vallée d'Aoste,90+,1781
+230,VDA,Valle d'Aosta / Vallée d'Aoste,tot,123895
+231,VEN,Veneto,0-11,478147
+232,VEN,Veneto,12-19,374041
+233,VEN,Veneto,20-29,481339
+234,VEN,Veneto,30-39,524439
+235,VEN,Veneto,40-49,717331
+236,VEN,Veneto,50-59,806474
+237,VEN,Veneto,60-69,610635
+238,VEN,Veneto,70-79,494721
+239,VEN,Veneto,80-89,298205
+240,VEN,Veneto,90+,67121
+241,VEN,Veneto,tot,4852453

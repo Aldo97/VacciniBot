@@ -61,7 +61,7 @@ def consegne(dis,**kwargs):
 	if data:
 		dis = dis[pd.to_datetime(dis['data_consegna'], format='%Y-%m-%d') <= date.datetime.strptime(data,'%Y%m%d')]
 	if reg:
-		dis = dis[dis.nome_area == reg]
+		dis = dis[dis.area == reg]
 	if forn:
 		dis = dis[dis.fornitore == forn]
 		sumJ = 0
@@ -104,7 +104,7 @@ def somministrazioni(som,**kwargs):
 	if data2:
 		som = som[pd.to_datetime(som['data_somministrazione'], format='%Y-%m-%d') <= date.datetime.strptime(data2,'%Y%m%d')]
 	if reg:
-		som = som[som.nome_area == reg]
+		som = som[som.area == reg]
 	if forn:
 		som = som[som.fornitore == forn]
 	
@@ -145,31 +145,19 @@ def somministrazioni(som,**kwargs):
 		
 def pop(plat,**kwargs):
 	fascia=kwargs.get('fascia',"tot")
-	reg=kwargs.get('reg',"Italia")
-	
-		
-	if reg == "Provincia Autonoma Bolzano / Bozen" and not plat:
-		reg = "Bolzano / Bozen"
-	elif reg == "Provincia Autonoma Bolzano / Bozen" and plat:
-		reg = "P.A. Bolzano"
-	elif reg == "Provincia Autonoma Trento" and not plat:
-		reg = "Trento"
-	elif reg == "Provincia Autonoma Trento" and plat:
-		reg = "P.A. Trento"
-	elif reg == "Valle d'Aosta / Vallée d'Aoste" and plat:
-		reg = "Valle d'Aosta"
+	reg=kwargs.get('reg',"IT")
 		
 	if fascia == False:
 		fascia = "tot"
 	if reg == False:
-		reg = "Italia"
+		reg = "IT"
 	if plat == "1":
 		return platea(file_platea,fascia,reg)
 	else:
 		return istat21(dati_istat21,fascia,reg)
 	
 def istat21(dati_istat21,fascia,reg):
-	dati_istat21 = dati_istat21[dati_istat21.Territorio == reg]
+	dati_istat21 = dati_istat21[dati_istat21.area == reg]
 	
 	sum = dati_istat21.loc[dati_istat21.fascia == fascia, "value"].tolist()[0]
 	
@@ -182,8 +170,8 @@ def istat21(dati_istat21,fascia,reg):
 	return sum,sumV
 
 def platea(file_platea,fascia,reg):
-	if reg != "Italia":
-		file_platea = file_platea[file_platea.nome_area == reg]
+	if reg != "IT":
+		file_platea = file_platea[file_platea.area == reg]
 	
 	if fascia != "tot":
 		file_platea = file_platea[file_platea.fascia_anagrafica == fascia]
@@ -205,7 +193,7 @@ def somm_d_a(som, **kwargs):
 	if data2:
 		som = som[pd.to_datetime(som['data_somministrazione'], format='%Y-%m-%d') <= date.datetime.strptime(data2,'%Y%m%d')]
 	if reg:
-		som = som[som.nome_area == reg]
+		som = som[som.area == reg]
 	if forn:
 		som = som[som.fornitore == forn]
 	
@@ -218,45 +206,28 @@ def somm_d_a(som, **kwargs):
 def platea_d_a(platea,**kwargs):
 	reg=kwargs.get('reg',False)
 	
-	if reg == "Provincia Autonoma Bolzano / Bozen":
-		reg = "P.A. Bolzano"
-	elif reg == "Provincia Autonoma Trento":
-		reg = "P.A. Trento"
-	elif reg == "Valle d'Aosta / Vallée d'Aoste":
-		reg = "Valle d'Aosta"
-	
 	if not reg:
 		popolazione = 0
 		for i in platea.totale_popolazione.tolist():
 			popolazione += i
 	else:
-		popolazione = int(platea.loc[platea.nome_area == reg, "totale_popolazione"])
+		popolazione = int(platea.loc[platea.area == reg, "totale_popolazione"])
 	
 	
 	return popolazione
 
-def istat21_show(update,context):
-	if len(update.message.text.split()) == 2:
-		reg = extract(update.message.text,1)
-		if extract(update.message.text,1) == "download":
-			file = requests.get("https://raw.githubusercontent.com/Aldo97/VacciniBot/main/istat21.csv")
-			context.bot.sendDocument(chat_id=update.message.chat.id,document=file.content,filename="istat21.csv")
-			return
-	elif len(update.message.text.split()) == 1:
-		reg = "Italia"
+def istat21_show(reg):
+	if reg == "0" or reg == "IT":
+		reg = "IT"
+		reg_name = "Italia"
 	else:
-		update.message.reply_text("Inserire una regione o nessun argomento")
-	
-	if reg == "Friuli":
-		reg = "Friuli-Venezia Giulia"
-	elif reg == "Aosta":
-		reg = "Valle d'Aosta / Vallée d'Aoste"
-		
+		reg_name = file_platea.loc[file_platea.area == reg].nome_area.tolist()[0]
+
 	fascia = ["0-11","12-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"]
 	
-	pop = dati_istat21[dati_istat21.Territorio == reg]
+	pop = dati_istat21[dati_istat21.area == reg]
 	
-	string = reg + "\nPopolazione di riferimento (ISTAT21)"
+	string = reg_name + "\nPopolazione di riferimento (ISTAT21)"
 	
 	for i in fascia:
 		spazi2 = ""
@@ -271,7 +242,7 @@ def istat21_show(update,context):
 		
 	string += "\n\nPopolazione totale: `" + str(pop.loc[pop.fascia == "tot", "value"].tolist()[0]) + "`"
 	
-	update.message.reply_text(string, parse_mode='Markdown')
+	return string
 
 def vaccinati(update,CallbackContext):
 	if len(update.message.text.split()) == 3:
@@ -295,7 +266,7 @@ def vaccinati(update,CallbackContext):
 	
 	forn = "0"
 		
-	inf = "0," + "Italia" + "," + forn + "," + data1 + "," + data2 + ",0"
+	inf = "0," + "0" + "," + forn + "," + data1 + "," + data2 + ",0"
 	
 	if data2 != "0" and data2 != data1:
 		string = "Somministrazioni dal " + convert_data(data1) + " al " + convert_data(data2)
@@ -364,15 +335,6 @@ def fascia(info):
 	if plat == "1" and fascia == "0":
 		vac = True
 		
-	if reg == "Friuli":
-		reg = "Friuli-Venezia Giulia"
-	elif reg == "Bolzano":
-		reg = "Provincia Autonoma Bolzano / Bozen"
-	elif reg == "Trento":
-		reg = "Provincia Autonoma Trento"
-	elif reg == "Aosta":
-		reg = "Valle d'Aosta / Vallée d'Aoste"
-		
 	if forn == "J&J":
 		forn = "Janssen"
 	elif forn == "Pfizer" or forn == "Biontech" or forn == "BioNTech":
@@ -389,7 +351,7 @@ def fascia(info):
 		reg = False
 	
 	if reg:
-		string = reg
+		string = file_platea.loc[file_platea.area == reg].nome_area.tolist()[0]
 	else:
 		string = "Italia"
 		
@@ -583,8 +545,16 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 	
 def button(update,_: CallbackContext):
 	query = update.callback_query
+	
+	if len(query.data.split(",")[1]) > 3 or len(query.data.split(",")) != 6:
+		try:
+			query.edit_message_text(text="Questa finestra è stata chiusa a causa di un aggiornamento del bot, richiamare /vaccinati per poter continuare ad usarlo.")
+			return
+		except telegram.error.BadRequest:
+			return
+			
 	if query.data[:1] != "V" and query.data[:1] != "F" and query.data[:1] != "R" and query.data[:1] != "D" and query.data[:1] != "A" and query.data != "Chiudi":
-		if query.data[:1] != "v" and query.data[:1] != "f" and query.data[:1] != "r" and query.data[:1] != "d" and query.data[:1] != "t" and query.data[:1] != "l" and query.data[:1] != "a":
+		if query.data[:1] != "v" and query.data[:1] != "f" and query.data[:1] != "r" and query.data[:1] != "d" and query.data[:1] != "t" and query.data[:1] != "l" and query.data[:1] != "a" and query.data[:1] != "p":
 			inf = query.data
 		else:
 			if query.data[:1] == "a":
@@ -604,7 +574,11 @@ def button(update,_: CallbackContext):
 			
 			if 'segno' in locals():
 				inf = segno + inf
-			string = fascia(inf)
+
+			if query.data[:1] != "a" and query.data[:1] != "p":
+				string = fascia(inf)
+			elif query.data[:1] == "p":
+				string = istat21_show(query.data.split(",")[1])
 		else:
 			if len(query.data.split(",")[3]) == 4:
 				string = "Selezione Mese Data1"
@@ -615,7 +589,7 @@ def button(update,_: CallbackContext):
 			if len(query.data.split(",")[4]) == 6:
 				string = "Selezione Giorno Data2"
 		if inf[:1] == "-" or inf[:1] == "+" or inf[:1] == "*" or inf[:1] == "%" or inf[:1] == "&" or inf[:1] == "?":
-			inf = inf[1:]
+			inf = inf[1:]		
 
 	else:
 		if query.data[:1] != "D" and query.data != "Chiudi" and query.data[:1] != "A":
@@ -771,7 +745,7 @@ def button(update,_: CallbackContext):
 		],
 		]
 		
-	elif query.data[:1] == "R" or query.data[:1] == "r":
+	elif query.data[:1] == "R" or query.data[:1] == "r" or query.data[:1] == "p":
 	
 		if segno == "*" or segno == "+":
 			sufascia = [
@@ -807,6 +781,18 @@ def button(update,_: CallbackContext):
 		else:
 			sufascia = []
 			sufascia2 = []
+		
+		if query.data[:1] == "p":
+			istat = [
+			telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
+			telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
+			]
+		else:
+			istat = [
+			telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
+			telegram.InlineKeyboardButton("Dati ISTAT21", callback_data="p" + inf),
+			telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
+			]
 			
 		if segno == "":
 			end = [
@@ -822,39 +808,36 @@ def button(update,_: CallbackContext):
 			
 		keyboard = [
 		[
-			telegram.InlineKeyboardButton("Abruzzo", callback_data=infR1 + change(inf,1,"Abruzzo",False)),
-			telegram.InlineKeyboardButton("Basilicata", callback_data=infR1 + change(inf,1,"Basilicata",False)),
-			telegram.InlineKeyboardButton("Calabria", callback_data=infR1 + change(inf,1,"Calabria",False)),
-			telegram.InlineKeyboardButton("Campania", callback_data=infR1 + change(inf,1,"Campania",False)),
+			telegram.InlineKeyboardButton("Abruzzo", callback_data=infR1 + change(inf,1,"ABR",False)),
+			telegram.InlineKeyboardButton("Basilicata", callback_data=infR1 + change(inf,1,"BAS",False)),
+			telegram.InlineKeyboardButton("Calabria", callback_data=infR1 + change(inf,1,"CAL",False)),
+			telegram.InlineKeyboardButton("Campania", callback_data=infR1 + change(inf,1,"CAM",False)),
 		],
 		[
-			telegram.InlineKeyboardButton("Friuli", callback_data=infR1 + change(inf,1,"Friuli",False)),
-			telegram.InlineKeyboardButton("Lazio", callback_data=infR1 + change(inf,1,"Lazio",False)),
-			telegram.InlineKeyboardButton("Liguria", callback_data=infR1 + change(inf,1,"Liguria",False)),
-			telegram.InlineKeyboardButton("Lombardia", callback_data=infR1 + change(inf,1,"Lombardia",False)),
+			telegram.InlineKeyboardButton("Friuli", callback_data=infR1 + change(inf,1,"FVG",False)),
+			telegram.InlineKeyboardButton("Lazio", callback_data=infR1 + change(inf,1,"LAZ",False)),
+			telegram.InlineKeyboardButton("Liguria", callback_data=infR1 + change(inf,1,"LIG",False)),
+			telegram.InlineKeyboardButton("Lombardia", callback_data=infR1 + change(inf,1,"LOM",False)),
 		],
 		[
-			telegram.InlineKeyboardButton("Marche", callback_data=infR1 + change(inf,1,"Marche",False)),
-			telegram.InlineKeyboardButton("Molise", callback_data=infR1 + change(inf,1,"Molise",False)),
-			telegram.InlineKeyboardButton("Bolzano", callback_data=infR1 + change(inf,1,"Bolzano",False)),
-			telegram.InlineKeyboardButton("Trento", callback_data=infR1 + change(inf,1,"Trento",False)),
+			telegram.InlineKeyboardButton("Marche", callback_data=infR1 + change(inf,1,"MAR",False)),
+			telegram.InlineKeyboardButton("Molise", callback_data=infR1 + change(inf,1,"MOL",False)),
+			telegram.InlineKeyboardButton("Bolzano", callback_data=infR1 + change(inf,1,"PAB",False)),
+			telegram.InlineKeyboardButton("Trento", callback_data=infR1 + change(inf,1,"PAT",False)),
 		],
 		[
-			telegram.InlineKeyboardButton("Piemonte", callback_data=infR1 + change(inf,1,"Piemonte",False)),
-			telegram.InlineKeyboardButton("Puglia", callback_data=infR1 + change(inf,1,"Puglia",False)),
-			telegram.InlineKeyboardButton("Sardegna", callback_data=infR1 + change(inf,1,"Sardegna",False)),
-			telegram.InlineKeyboardButton("Sicilia", callback_data=infR1 + change(inf,1,"Sicilia",False)),
+			telegram.InlineKeyboardButton("Piemonte", callback_data=infR1 + change(inf,1,"PIE",False)),
+			telegram.InlineKeyboardButton("Puglia", callback_data=infR1 + change(inf,1,"PUG",False)),
+			telegram.InlineKeyboardButton("Sardegna", callback_data=infR1 + change(inf,1,"SAR",False)),
+			telegram.InlineKeyboardButton("Sicilia", callback_data=infR1 + change(inf,1,"SIC",False)),
 		],
 		[
-			telegram.InlineKeyboardButton("Toscana", callback_data=infR1 + change(inf,1,"Toscana",False)),
-			telegram.InlineKeyboardButton("Umbria", callback_data=infR1 + change(inf,1,"Umbria",False)),
-			telegram.InlineKeyboardButton("Aosta", callback_data=infR1 + change(inf,1,"Aosta",False)),
-			telegram.InlineKeyboardButton("Veneto", callback_data=infR1 + change(inf,1,"Veneto",False)),
+			telegram.InlineKeyboardButton("Toscana", callback_data=infR1 + change(inf,1,"TOS",False)),
+			telegram.InlineKeyboardButton("Umbria", callback_data=infR1 + change(inf,1,"UMB",False)),
+			telegram.InlineKeyboardButton("Aosta", callback_data=infR1 + change(inf,1,"VDA",False)),
+			telegram.InlineKeyboardButton("Veneto", callback_data=infR1 + change(inf,1,"VEN",False)),
 		],
-		[
-			telegram.InlineKeyboardButton("Emilia-Romagna", callback_data=infR1 + change(inf,1,"Emilia-Romagna",False)),
-			telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
-		],
+		istat,
 		sufascia,
 		sufascia2,
 		end,
@@ -1109,9 +1092,9 @@ def button(update,_: CallbackContext):
 		],
 		]
 
-	if query.data[:1] != "D" and query.data != "Chiudi":
+	if query.data[:1] != "D" and query.data != "Chiudi" and query.data[:1] != "p":
 		string += "\nUltimo controllo alle: " + agg2
-	
+
 	try:
 		if query.data == "Chiudi":
 			query.edit_message_text(text=query.message.text)
@@ -1147,7 +1130,6 @@ def main():
 
 	disp.add_handler(CommandHandler("help", help))
 	disp.add_handler(CommandHandler("segnalazione", segnalazione))
-	disp.add_handler(CommandHandler("istat21", istat21_show))
 	disp.add_handler(CommandHandler("vaccinati", vaccinati))
 	disp.add_handler(CommandHandler("start", vaccinati))
 	disp.add_handler(CallbackQueryHandler(button))

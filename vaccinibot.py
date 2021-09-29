@@ -226,21 +226,13 @@ def istat21_show(reg):
 	fascia = ["0-11","12-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"]
 	
 	pop = dati_istat21[dati_istat21.area == reg]
-	
-	string = reg_name + "\nPopolazione di riferimento (ISTAT21)"
+	tot = pop.loc[pop.fascia == "tot", "value"].tolist()[0]
+	string = reg_name + "\nPopolazione di riferimento (ISTAT21)\n"
 	
 	for i in fascia:
-		spazi2 = ""
-		if i == "0-11":
-			spazi = "   "
-		elif i == "90+":
-			spazi = " "
-			spazi2 = "     "
-		else:
-			spazi = " "
-		string += "\nFascia" + spazi + i + ": " + spazi2 + "`" + str(pop.loc[pop.fascia == i, "value"].tolist()[0]) + "`"
-		
-	string += "\n\nPopolazione totale: `" + str(pop.loc[pop.fascia == "tot", "value"].tolist()[0]) + "`"
+		string += "\nFascia " + str(i) + ": " + bar(pop.loc[pop.fascia == i, "value"].tolist()[0],tot)
+	
+	string += "\n\nPopolazione totale: " + str(tot)
 	
 	return string
 

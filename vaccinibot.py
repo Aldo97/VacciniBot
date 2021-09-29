@@ -589,7 +589,7 @@ def button(update,_: CallbackContext):
 			if len(query.data.split(",")[4]) == 6:
 				string = "Selezione Giorno Data2"
 		if inf[:1] == "-" or inf[:1] == "+" or inf[:1] == "*" or inf[:1] == "%" or inf[:1] == "&" or inf[:1] == "?":
-			inf = inf[1:]		
+			inf = inf[1:]
 
 	else:
 		if query.data[:1] != "D" and query.data != "Chiudi" and query.data[:1] != "A":

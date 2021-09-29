@@ -415,15 +415,15 @@ def fascia(info):
 	else:
 		string += "\nFile PLATEA"
 
-	if fascia == "60" and sommafascia == False:
+	if fascia == "50" and sommafascia == False:
 		if plat == "0":
-			fascia = "60-69 70-79 80-89 90+"
+			fascia = "50-59 60-69 70-79 80-89 90+"
 		else:
-			fascia = "60-69 70-79 80+"
-		string += "\nOver 60"
-	elif fascia == "59" and sommafascia == False:
-		fascia = "12-19 20-29 30-39 40-49 50-59"
-		string += "\nUnder 60"
+			fascia = "50-59 60-69 70-79 80+"
+		string += "\nOver 50"
+	elif fascia == "49" and sommafascia == False:
+		fascia = "12-19 20-29 30-39 40-49"
+		string += "\nUnder 50"
 	elif fascia == "30" and sommafascia == False:
 		fascia = "12-19 20-29"
 		string += "\nUnder 30"
@@ -720,8 +720,8 @@ def button(update,_: CallbackContext):
 		],
 			over70,
 		[
-			telegram.InlineKeyboardButton("Over 60", callback_data='f' + segno + change(inf,0,"60",False)),
-			telegram.InlineKeyboardButton("Under 60", callback_data='f' + segno + change(inf,0,"59",False)),
+			telegram.InlineKeyboardButton("Over 50", callback_data='f' + segno + change(inf,0,"50",False)),
+			telegram.InlineKeyboardButton("Under 50", callback_data='f' + segno + change(inf,0,"49",False)),
 			telegram.InlineKeyboardButton("Under 30", callback_data='f' + segno + change(inf,0,"30",False)),
 		],
 			plat,

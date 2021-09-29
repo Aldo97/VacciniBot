@@ -615,6 +615,9 @@ def button(update,_: CallbackContext):
 	else:
 		infR1="r"
 		segno = ""
+		
+	if query.data[:1] == "p":
+		infR1 = "p" + segno
 	
 	if segno == "?" and query.data[:1] != "r":
 		segno = ""
@@ -773,18 +776,6 @@ def button(update,_: CallbackContext):
 		else:
 			sufascia = []
 			sufascia2 = []
-		
-		if query.data[:1] == "p":
-			istat = [
-			telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
-			telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
-			]
-		else:
-			istat = [
-			telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
-			telegram.InlineKeyboardButton("Dati ISTAT21", callback_data="p" + inf),
-			telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
-			]
 			
 		if segno == "":
 			end = [
@@ -796,6 +787,22 @@ def button(update,_: CallbackContext):
 			end = [
 				telegram.InlineKeyboardButton("Indietro", callback_data=segno + inf),
 				telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),		
+			]
+			
+		if query.data[:1] == "p":
+			istat = [
+			telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
+			telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
+			]
+			end = [
+			telegram.InlineKeyboardButton("Indietro", callback_data="R" + segno + inf),
+			telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
+			]
+		else:
+			istat = [
+			telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
+			telegram.InlineKeyboardButton("Dati ISTAT21", callback_data="p" + inf),
+			telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
 			]
 			
 		keyboard = [

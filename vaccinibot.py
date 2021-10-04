@@ -206,12 +206,12 @@ def somm_d_a(som, **kwargs):
 def platea_d_a(platea,**kwargs):
 	reg=kwargs.get('reg',False)
 	
-	if not reg:
-		popolazione = 0
-		for i in platea.totale_popolazione.tolist():
-			popolazione += i
-	else:
-		popolazione = int(platea.loc[platea.area == reg, "totale_popolazione"])
+	if reg and reg != "IT":
+		platea = platea[platea.area == reg]
+		
+	popolazione = 0
+	for i in platea.totale_popolazione.tolist():
+		popolazione += i
 	
 	
 	return popolazione
@@ -447,7 +447,7 @@ def fascia(info):
 	if not fascia:
 		somm_dosi_aggiuntive = somm_d_a(somministrate,reg=reg,forn=forn,data1=data1,data2=data2)
 		if somm_dosi_aggiuntive != 0:
-			string += "\nDose aggiuntiva su platea immunocompromessi\n" + bar(somm_dosi_aggiuntive,platea_d_a(platea_dose_aggiuntiva,reg=reg))
+			string += "\nDose aggiuntiva su platea d.a.\n" + bar(somm_dosi_aggiuntive,platea_d_a(platea_dose_aggiuntiva,reg=reg))
 	else:
 		somm_dosi_aggiuntive = 0
 		

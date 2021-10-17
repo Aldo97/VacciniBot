@@ -1098,7 +1098,7 @@ def button(update,_: CallbackContext):
 		],
 		]
 
-	if query.data[:1] != "D" and len(query.data.split(",")[3]) != 8 and len(query.data.split(",")[4]) != 8 and query.data != "Chiudi" and query.data[:1] != "p":
+	if query.data[:1] != "D" and len(query.data.split(",")[3]) != 4 and len(query.data.split(",")[4]) != 4 and len(query.data.split(",")[3]) != 6 and len(query.data.split(",")[4]) != 6 and query.data != "Chiudi" and query.data[:1] != "p":
 		string += "\nUltimo controllo alle: " + agg2
 
 	try:

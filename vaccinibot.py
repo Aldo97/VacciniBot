@@ -538,6 +538,13 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 def button(update,_: CallbackContext):
 	query = update.callback_query
 	
+	if query.data == "Chiudi":
+		try:
+			query.edit_message_text(text=query.message.text)
+			return
+		except telegram.error.BadRequest:
+			return
+	
 	if len(query.data.split(",")[1]) > 3 or len(query.data.split(",")) != 6:
 		try:
 			query.edit_message_text(text="Questa finestra è stata chiusa a causa di un aggiornamento del bot, richiamare /vaccinati per poter continuare ad usarlo.")
@@ -1091,15 +1098,12 @@ def button(update,_: CallbackContext):
 		],
 		]
 
-	if query.data[:1] != "D" and query.data != "Chiudi" and query.data[:1] != "p":
+	if query.data[:1] != "D" and len(query.data.split(",")[3]) != 8 and len(query.data.split(",")[4]) != 8 and query.data != "Chiudi" and query.data[:1] != "p":
 		string += "\nUltimo controllo alle: " + agg2
 
 	try:
-		if query.data == "Chiudi":
-			query.edit_message_text(text=query.message.text)
-		else:
-			reply_markup = telegram.InlineKeyboardMarkup(keyboard)
-			query.edit_message_text(text=f"{string}", reply_markup=reply_markup, parse_mode='Markdown')
+		reply_markup = telegram.InlineKeyboardMarkup(keyboard)
+		query.edit_message_text(text=f"{string}", reply_markup=reply_markup, parse_mode='Markdown')
 	except telegram.error.BadRequest:
 		return
 		

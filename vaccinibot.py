@@ -182,11 +182,12 @@ def platea(file_platea,fascia,reg):
 		
 	return sum,sum
 
-def somm_d_a(som, **kwargs):
+def somm_d(som, **kwargs):
 	data1=kwargs.get('data1',False)
 	data2=kwargs.get('data2',False)
 	reg=kwargs.get('reg',False)
 	forn=kwargs.get('forn',False)
+	booster=kwargs.get('booster',False)
 
 	if data1:
 		som = som[pd.to_datetime(som['data_somministrazione'], format='%Y-%m-%d') >= date.datetime.strptime(data1,'%Y%m%d')]
@@ -198,12 +199,16 @@ def somm_d_a(som, **kwargs):
 		som = som[som.fornitore == forn]
 	
 	sum = 0
-	for i in som.dose_aggiuntiva.tolist():
-		sum += i
+	if booster:
+		for i in som.dose_booster.tolist():
+			sum += i
+	else:
+		for i in som.dose_aggiuntiva.tolist():
+			sum += i
 	
 	return sum
 		
-def platea_d_a(platea,**kwargs):
+def platea_d(platea,**kwargs):
 	reg=kwargs.get('reg',False)
 	
 	if reg and reg != "IT":
@@ -445,11 +450,15 @@ def fascia(info):
 		string += "\nGuariti completamente immunizzati\n" + bar(sompre,po)
 
 	if not fascia:
-		somm_dosi_aggiuntive = somm_d_a(somministrate,reg=reg,forn=forn,data1=data1,data2=data2)
+		somm_dosi_aggiuntive = somm_d(somministrate,reg=reg,forn=forn,data1=data1,data2=data2)
+		somm_dosi_booster = somm_d(somministrate,reg=reg,forn=forn,data1=data1,data2=data2,booster=1)
 		if somm_dosi_aggiuntive != 0:
-			string += "\nDose aggiuntiva su platea d.a.\n" + bar(somm_dosi_aggiuntive,platea_d_a(platea_dose_aggiuntiva,reg=reg))
+			string += "\nDose aggiuntiva su platea d.a.\n" + bar(somm_dosi_aggiuntive,platea_d(platea_dose_aggiuntiva,reg=reg))
+		if somm_dosi_booster != 0:
+			string += "\nDose booster su platea d.b.\n" + bar(somm_dosi_booster,platea_d(platea_dose_booster,reg=reg))
 	else:
 		somm_dosi_aggiuntive = 0
+		somm_dosi_booster = 0
 		
 	if forn != "Janssen":
 		if data1 == False:
@@ -457,12 +466,12 @@ def fascia(info):
 		if forn == False:
 			string += "\nCompletamente vaccinati con J&J\n" + bar(somJ,po)
 		if data1:
-			string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somm_dosi_aggiuntive,po)
+			string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somm_dosi_aggiuntive+somm_dosi_booster,po)
 	
 	if fascia == False and data1 == False:	
 		if forn == "Janssen":
 			somJ = sompre
-		string += "\nDosi somministrate su consegnate\n" + bar(som1+som2+somJ-sompre+somm_dosi_aggiuntive,cons+consJ)
+		string += "\nDosi somministrate su consegnate\n" + bar(som1+som2+somJ-sompre+somm_dosi_aggiuntive+somm_dosi_booster,cons+consJ)
 	
 	return string
 	
@@ -1147,6 +1156,7 @@ def tab():
 	global file_platea
 	global dati_istat21
 	global platea_dose_aggiuntiva
+	global platea_dose_booster
 	global agg
 	global agg2
 	agg = ""
@@ -1158,6 +1168,7 @@ def tab():
 			distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
 			file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
 			platea_dose_aggiuntiva = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-aggiuntiva.csv')
+			platea_dose_booster = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-booster.csv')
 			agg = lastupd()
 		agg2 = date.datetime.now().strftime("%H:%M:%S")
 		time.sleep(90*60)
@@ -1167,6 +1178,7 @@ def forceupd():
 	global distribuite
 	global file_platea
 	global platea_dose_aggiuntiva
+	global platea_dose_booster
 	global agg
 	global agg2	
 
@@ -1174,6 +1186,7 @@ def forceupd():
 	distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
 	file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
 	platea_dose_aggiuntiva = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-aggiuntiva.csv')
+	platea_dose_booster = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-dose-booster.csv')
 	agg = lastupd()
 	agg2 = date.datetime.now().strftime("%H:%M:%S")
 		

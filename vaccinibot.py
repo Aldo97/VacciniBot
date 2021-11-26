@@ -138,10 +138,16 @@ def somministrazioni(som,**kwargs):
 	if forn != "Janssen":
 		sum2 += sumpre
 	
+	sum_da = 0
+	for i in som.dose_booster.tolist():
+		sum_da += i
+	for i in som.dose_aggiuntiva.tolist():
+		sum_da += i
+	
 	if forn == False:
-		return sum,sum2,sumJ,sumpre,sumpreJ
+		return sum,sum2,sumJ,sumpre,sumpreJ,sum_da
 	else:
-		return sum,sum2,0,sumpre,sumpreJ
+		return sum,sum2,0,sumpre,sumpreJ,sum_da
 		
 def pop(plat,**kwargs):
 	fascia=kwargs.get('fascia',"tot")
@@ -181,37 +187,6 @@ def platea(file_platea,fascia,reg):
 		sum += i
 		
 	return sum,sum
-
-def somm_d(som, **kwargs):
-	data1=kwargs.get('data1',False)
-	data2=kwargs.get('data2',False)
-	reg=kwargs.get('reg',False)
-	forn=kwargs.get('forn',False)
-	fascia=kwargs.get('fascia',False)
-	
-
-	if data1:
-		som = som[pd.to_datetime(som['data_somministrazione'], format='%Y-%m-%d') >= date.datetime.strptime(data1,'%Y%m%d')]
-	if data2:
-		som = som[pd.to_datetime(som['data_somministrazione'], format='%Y-%m-%d') <= date.datetime.strptime(data2,'%Y%m%d')]
-	if reg:
-		som = som[som.area == reg]
-	if forn:
-		som = som[som.fornitore == forn]
-		
-	if fascia:
-		if fascia == "80+":
-			som = som[som.fascia_anagrafica == "80-89"].append(som[som.fascia_anagrafica == "90+"])
-		else:
-			som = som[som.fascia_anagrafica == fascia]
-	
-	sum = 0
-	for i in som.dose_booster.tolist():
-		sum += i
-	for i in som.dose_aggiuntiva.tolist():
-		sum += i
-	
-	return sum
 
 def istat21_show(reg):
 	if reg == "0" or reg == "IT":
@@ -305,11 +280,13 @@ def fascia(info):
 	elif fascia[:1] == "*":
 		fascia = fascia[1:]
 		fasciaavaccini = True
-	elif fascia[:1] == "%" or fascia[:1] == "&":
+	elif fascia[:1] == "%" or fascia[:1] == "&" or fascia[:1] == "$":
 		if fascia[:1] == "%":
-			prime = True
+			dose = 1
+		elif fascia[:1] == "$":
+			dose = 3
 		else:
-			prime = False
+			dose = 2
 		fascia = fascia[1:]
 		vacciniafascia = True
 	elif fascia[:1] == "?":
@@ -390,7 +367,7 @@ def fascia(info):
 			string += "\nPopolazione vaccinabile"
 		return fasciavaccini(string,reg,fascia,data1,data2,vac,plat)
 	elif vacciniafascia:
-		return vaccinifascia(string,reg,forn,data1,data2,prime,plat)
+		return vaccinifascia(string,reg,forn,data1,data2,dose,plat)
 		
 	som1=0
 	som2=0
@@ -399,11 +376,12 @@ def fascia(info):
 	sompreJ=0
 	po=0
 	pov=0
+	somm_dose_addizionale_booster=0
 	for i in fascia.split():
 		if i == "0":
 			i = False
 			fascia = False
-		u,d,g,p,k = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		u,d,g,p,k,da = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
 		t,tv = pop(plat,reg=reg,fascia=i)
 		som1 += u
 		som2 += d
@@ -412,6 +390,8 @@ def fascia(info):
 		sompreJ += k
 		po += t
 		pov += tv
+		somm_dose_addizionale_booster += da
+		
 			
 	cons,consJ = consegne(distribuite,reg=reg,forn=forn)
 
@@ -441,7 +421,6 @@ def fascia(info):
 	if sompre != 0:
 		string += "\nGuariti completamente immunizzati\n" + bar(sompre,po)
 
-	somm_dose_addizionale_booster = somm_d(somministrate,reg=reg,forn=forn,data1=data1,fascia=fascia,data2=data2)
 	if somm_dose_addizionale_booster != 0:
 		string += "\nDose addizionale-booster\n" + bar(somm_dose_addizionale_booster,po)
 		
@@ -460,21 +439,24 @@ def fascia(info):
 	
 	return string
 	
-def vaccinifascia(string,reg,forn,data1,data2,prime,plat):
+def vaccinifascia(string,reg,forn,data1,data2,dose,plat):
 	if plat == "0":
 		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
 	else:
 		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	string += "\n"
 	for i in fascia.split():
-		som1,som2,somJ,sompre,sompreJ = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		som1,som2,somJ,sompre,sompreJ,som_da = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
 		po, _ = pop(plat,reg=reg,fascia=i)
-		if prime:
+			
+		if dose == 1:
 			string += "\nVaccinati con almeno 1 dose fascia " + i + "\n" + bar(som1+somJ,po,nextended=True)
-		else:
+		elif dose == 2:
 			if forn == "Janssen":
 				somJ = som1
 			string += "\nCompletamente immunizzati fascia " + i + "\n" + bar(som2+somJ-sompreJ,po,nextended=True)
+		else:
+			string += "\nDosi addizionali-booster fascia " + i + "\n" + bar(som_da,po,nextended=True)
 	return string
 
 def sommfascia(string,reg,forn,data1,data2,plat):
@@ -484,8 +466,8 @@ def sommfascia(string,reg,forn,data1,data2,plat):
 		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	s=[]
 	for i in fascia.split():
-		som1,som2,somJ,sompre,sompreJ = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
-		s.append(som1+som2+somJ-sompre)
+		som1,som2,somJ,sompre,sompreJ,som_da = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		s.append(som1+som2+somJ-sompre+som_da)
 		
 	string += "\n"
 	k=0
@@ -504,7 +486,7 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 		if vac:
 			po = pov
 		for i in forn:
-			som1,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=False,forn=i,data1=data1,data2=data2)
+			som1,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=False,forn=i,data1=data1,data2=data2)
 			string += "\nQuota di vaccinati con " + i + "\n" + bar(som1,po)
 		return string
 	data=[]
@@ -513,7 +495,7 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 	for i in forn:
 		s=[]
 		for k in fascia.split():
-			som1,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=k,forn=i,data1=data1,data2=data2)
+			som1,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=k,forn=i,data1=data1,data2=data2)
 			s.append(som1)
 		data.append(s)
 		
@@ -581,13 +563,13 @@ def button(update,_: CallbackContext):
 				string = "Selezione Mese Data2"
 			if len(query.data.split(",")[4]) == 6:
 				string = "Selezione Giorno Data2"
-		if inf[:1] == "-" or inf[:1] == "+" or inf[:1] == "*" or inf[:1] == "%" or inf[:1] == "&" or inf[:1] == "?":
+		if inf[:1] == "-" or inf[:1] == "+" or inf[:1] == "*" or inf[:1] == "%" or inf[:1] == "$" or inf[:1] == "&" or inf[:1] == "?":
 			inf = inf[1:]
 
 	else:
 		if query.data[:1] != "D" and query.data != "Chiudi" and query.data[:1] != "A":
 			string = fascia(query.data[1:])
-		if query.data[1:2] == "-" or query.data[1:2] == "*" or query.data[1:2] == "+" or query.data[1:2] == "%" or query.data[1:2] == "&" or query.data[1:2] == "?":
+		if query.data[1:2] == "-" or query.data[1:2] == "*" or query.data[1:2] == "+" or query.data[1:2] == "%" or query.data[1:2] == "$" or query.data[1:2] == "&" or query.data[1:2] == "?":
 			inf = query.data[2:]
 		else:
 			inf = query.data[1:]
@@ -607,6 +589,9 @@ def button(update,_: CallbackContext):
 	elif query.data[1:2] == "%" or query.data[:1] == "%":
 		infR1 = "r%"
 		segno = "%"
+	elif query.data[1:2] == "$" or query.data[:1] == "$":
+		infR1 = "r$"
+		segno = "$"
 	elif query.data[1:2] == "&" or query.data[:1] == "&":
 		infR1 = "r&"
 		segno = "&"
@@ -710,11 +695,19 @@ def button(update,_: CallbackContext):
 			sommfascia = [
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="v" + inf),
 			telegram.InlineKeyboardButton("Completamente immunizzati", callback_data="v&" + inf),
+			telegram.InlineKeyboardButton("Dose booster", callback_data="v$" + inf),
+			]
+		elif segno == "$":
+			sommfascia = [
+			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="v" + inf),
+			telegram.InlineKeyboardButton("Almeno una dose", callback_data="v%" + inf),
+			telegram.InlineKeyboardButton("Completamente immunizzati", callback_data="v&" + inf),
 			]
 		elif segno == "&":
 			sommfascia = [
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="v" + inf),
 			telegram.InlineKeyboardButton("Almeno una dose", callback_data="v%" + inf),
+			telegram.InlineKeyboardButton("Dose booster", callback_data="v$" + inf),
 			]
 		else:
 			sommfascia = [
@@ -757,12 +750,21 @@ def button(update,_: CallbackContext):
 			sufascia = [
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="r" + inf),
 			telegram.InlineKeyboardButton("Completamente immunizzati", callback_data="r&" + inf),
+			telegram.InlineKeyboardButton("Dose booster", callback_data="r$" + inf),
+			]
+			sufascia2 = []
+		elif segno == "$":
+			sufascia = [
+			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="r" + inf),
+			telegram.InlineKeyboardButton("Almeno una dose", callback_data="r%" + inf),
+			telegram.InlineKeyboardButton("Completamente immunizzati", callback_data="r&" + inf),
 			]
 			sufascia2 = []
 		elif segno == "&":
 			sufascia = [
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="r" + inf),
 			telegram.InlineKeyboardButton("Almeno una dose", callback_data="r%" + inf),
+			telegram.InlineKeyboardButton("Dose booster", callback_data="r$" + inf),
 			]
 			sufascia2 = []
 		elif segno == "?":
@@ -1050,7 +1052,7 @@ def button(update,_: CallbackContext):
 				telegram.InlineKeyboardButton("Fascia", callback_data='F' + segno + inf),
 				telegram.InlineKeyboardButton("Regione", callback_data='R' + segno + inf),
 			]
-		elif query.data[:1] == "+" or query.data[:1] == "&" or query.data[:1] == "%":
+		elif query.data[:1] == "+" or query.data[:1] == "&" or query.data[:1] == "%" or query.data[:1] == "$":
 			tastiera = [
 				telegram.InlineKeyboardButton("Vaccino", callback_data='V' + segno + inf),
 				telegram.InlineKeyboardButton("Regione", callback_data='R' + segno + inf),

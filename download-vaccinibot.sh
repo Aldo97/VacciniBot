@@ -8,6 +8,8 @@ else
     cid = $2
 fi
 
+sudo apt install python3-venv
+
 curl https://raw.githubusercontent.com/Aldo97/VacciniBot/main/vaccinibot.py --silent --output vaccinibot.py
 curl https://raw.githubusercontent.com/Aldo97/VacciniBot/main/start-vaccinibot.sh --silent --output start-vaccinibot.sh
 curl https://raw.githubusercontent.com/Aldo97/VacciniBot/main/update-vaccinibot.sh --silent --output update-vaccinibot.sh

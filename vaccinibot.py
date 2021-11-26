@@ -206,6 +206,30 @@ def istat21_show(reg):
 	
 	return string
 
+def greenpass(string,guariti,fascia,reg):
+	string += "\n"
+	if reg and reg != "0":
+		guariti = guariti[guariti.area == reg]
+	
+	if fascia and fascia != "0":
+		if fascia == "80-89":
+			fascia = "80+"
+		string += "\nFascia " + fascia
+		guariti = guariti[guariti.fascia_anagrafica == fascia]
+	else:
+		fascia = False
+	
+	_,som2,somJ,_,sompreJ,vaccinatiB = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=270)).strftime('%Y%m%d'))
+	vaccinati2 = som2+somJ-sompreJ
+	guaritiGP=0
+	for i in guariti.totale_guariti.tolist():
+		guaritiGP += i
+	string += "\n" + "Guariti da meno di 6 mesi:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB)
+	string += "\n" + "Ciclo primario completato da 9 mesi:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB)
+	string += "\n" + "Vaccinati con addizionale-booster:\n" + bar(vaccinatiB,guaritiGP+vaccinati2+vaccinatiB)
+	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati"
+	return string
+
 def vaccinati(update,CallbackContext):
 	if len(update.message.text.split()) == 3:
 		data1 = extract(update.message.text,1)
@@ -268,6 +292,11 @@ def fascia(info):
 	if fascia[:1] == "-":
 		fascia = fascia[1:]
 		mancanti = True
+	if fascia[:1] == "^":
+		GP = True
+		fascia = fascia[1:]
+	else:
+		GP = False
 		
 	sommafascia = False
 	fasciaavaccini = False
@@ -336,9 +365,9 @@ def fascia(info):
 	elif data1:
 		string += "\ndel " + convert_data(data1)
 		
-	if plat == "0":
+	if plat == "0" and not GP:
 		string += "\nDati ISTAT21"
-	else:
+	elif not GP:
 		string += "\nFile PLATEA"
 
 	if fascia == "50" and sommafascia == False:
@@ -367,6 +396,9 @@ def fascia(info):
 	elif vacciniafascia:
 		return vaccinifascia(string,reg,forn,data1,data2,dose,plat)
 		
+	if GP:
+		return greenpass(string,guariti,fascia,reg)
+		
 	som1=0
 	som2=0
 	somJ=0
@@ -392,13 +424,12 @@ def fascia(info):
 		
 			
 	cons,consJ = consegne(distribuite,reg=reg,forn=forn)
-
+	
 	if forn == "Janssen":
 		somJ = som1
 	
-	if fascia:
-		if len(fascia.split()) == 1:
-			string += "\nFascia " + fascia
+	if fascia != "0" and fascia:
+		string += "\nFascia " + fascia
 	else:
 		if vac:
 			string += "\nPopolazione vaccinabile"
@@ -561,13 +592,13 @@ def button(update,_: CallbackContext):
 				string = "Selezione Mese Data2"
 			if len(query.data.split(",")[4]) == 6:
 				string = "Selezione Giorno Data2"
-		if inf[:1] == "-" or inf[:1] == "+" or inf[:1] == "*" or inf[:1] == "%" or inf[:1] == "$" or inf[:1] == "&" or inf[:1] == "?":
+		if inf[:1] == "-" or inf[:1] == "^" or inf[:1] == "+" or inf[:1] == "*" or inf[:1] == "%" or inf[:1] == "$" or inf[:1] == "&" or inf[:1] == "?":
 			inf = inf[1:]
 
 	else:
 		if query.data[:1] != "D" and query.data != "Chiudi" and query.data[:1] != "A":
 			string = fascia(query.data[1:])
-		if query.data[1:2] == "-" or query.data[1:2] == "*" or query.data[1:2] == "+" or query.data[1:2] == "%" or query.data[1:2] == "$" or query.data[1:2] == "&" or query.data[1:2] == "?":
+		if query.data[1:2] == "-" or query.data[1:2] == "*" or query.data[1:2] == "+" or query.data[1:2] == "%" or query.data[1:2] == "$" or query.data[1:2] == "&" or query.data[1:2] == "?" or query.data[1:2] == "^":
 			inf = query.data[2:]
 		else:
 			inf = query.data[1:]
@@ -578,6 +609,9 @@ def button(update,_: CallbackContext):
 	if query.data[1:2] == "-" or query.data[:1] == "-":
 		infR1 = "r-"
 		segno = "-"
+	elif query.data[1:2] == "^" or query.data[:1] == "^":
+		infR1 = "r^"
+		segno = "^"
 	elif query.data[1:2] == "*" or query.data[:1] == "*":
 		infR1 = "r*"
 		segno = "*"
@@ -612,10 +646,9 @@ def button(update,_: CallbackContext):
 	query.answer()
 	
 	
-	
 	if query.data[:1] == "F" or query.data[:1] == "f":
 		if query.data.split(",")[3] == "0":
-			if segno != "*" and segno != "-":
+			if segno != "*" and segno != "-" and segno != "^":
 				segno = ""
 		if segno != "*":
 			if segno != "-":
@@ -640,7 +673,11 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Indietro", callback_data=segno + inf),
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data='f' + inf),
 			]
-		if query.data.split(",")[5] == "0":
+		if segno == "^":
+			sufascia = [
+			telegram.InlineKeyboardButton("Indietro", callback_data=segno + inf),
+			]
+		if query.data.split(",")[5] == "0" and segno != "^":
 			over70 = [
 			telegram.InlineKeyboardButton("70-79", callback_data='f' + segno + change(inf,0,"70-79",False)),
 			telegram.InlineKeyboardButton("80-89", callback_data='f' + segno + change(inf,0,"80-89",False)),
@@ -652,13 +689,28 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Popolazione vaccinabile", callback_data='f' + segno + change(inf,0,"1",False)),
 			]
 		else:
-			over70 =[
-			telegram.InlineKeyboardButton("70-79", callback_data='f' + segno + change(inf,0,"70-79",False)),
-			telegram.InlineKeyboardButton("80+", callback_data='f' + segno + change(inf,0,"80+",False)),
-			telegram.InlineKeyboardButton("Over 12", callback_data='f' + segno + change(inf,0,"1",False))
-			]
+			if segno != "^":
+				over70 =[
+				telegram.InlineKeyboardButton("70-79", callback_data='f' + segno + change(inf,0,"70-79",False)),
+				telegram.InlineKeyboardButton("80+", callback_data='f' + segno + change(inf,0,"80+",False)),
+				telegram.InlineKeyboardButton("Over 12", callback_data='f' + segno + change(inf,0,"1",False)),
+				]
+			else:
+				over70 =[
+				telegram.InlineKeyboardButton("70-79", callback_data='f' + segno + change(inf,0,"70-79",False)),
+				telegram.InlineKeyboardButton("80+", callback_data='f' + segno + change(inf,0,"80+",False)),
+				telegram.InlineKeyboardButton("Popolazione totale", callback_data='f' + segno + change(inf,0,"1",False)),
+				]
 			
 			plat = []
+		if segno == "^":
+			over = []
+		else:
+			over =[
+			telegram.InlineKeyboardButton("Over 50", callback_data='f' + segno + change(inf,0,"50",False)),
+			telegram.InlineKeyboardButton("Under 50", callback_data='f' + segno + change(inf,0,"49",False)),
+			telegram.InlineKeyboardButton("Under 30", callback_data='f' + segno + change(inf,0,"30",False)),
+			]
 
 		keyboard = [
 		[
@@ -672,11 +724,7 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("60-69", callback_data='f' + segno + change(inf,0,"60-69",False)),
 		],
 			over70,
-		[
-			telegram.InlineKeyboardButton("Over 50", callback_data='f' + segno + change(inf,0,"50",False)),
-			telegram.InlineKeyboardButton("Under 50", callback_data='f' + segno + change(inf,0,"49",False)),
-			telegram.InlineKeyboardButton("Under 30", callback_data='f' + segno + change(inf,0,"30",False)),
-		],
+			over,
 			plat,
 			sufascia,
 		[
@@ -800,11 +848,17 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
 			]
 		else:
-			istat = [
-			telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
-			telegram.InlineKeyboardButton("Dati ISTAT21", callback_data="p" + inf),
-			telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
-			]
+			if segno != "^":
+				istat = [
+				telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
+				telegram.InlineKeyboardButton("Dati ISTAT21", callback_data="p" + inf),
+				telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
+				]
+			else:
+				istat = [
+				telegram.InlineKeyboardButton("Emilia Romagna", callback_data=infR1 + change(inf,1,"EMR",False)),
+				telegram.InlineKeyboardButton("Italia", callback_data=infR1 + change(inf,1,"0",False)),
+				]	
 			
 		keyboard = [
 		[
@@ -1045,7 +1099,7 @@ def button(update,_: CallbackContext):
 			]
 		
 	elif query.data != "Chiudi":
-		if query.data[:1] == "*" or query.data[:1] == "-":
+		if query.data[:1] == "*" or query.data[:1] == "-" or query.data[:1] == "^":
 			tastiera = [
 				telegram.InlineKeyboardButton("Fascia", callback_data='F' + segno + inf),
 				telegram.InlineKeyboardButton("Regione", callback_data='R' + segno + inf),
@@ -1061,7 +1115,7 @@ def button(update,_: CallbackContext):
 				telegram.InlineKeyboardButton("Vaccino", callback_data='V' + segno + inf),
 				telegram.InlineKeyboardButton("Regione", callback_data='R' + segno + inf),
 			]
-		if query.data[:1] != "-":
+		if query.data[:1] != "-" and query.data[:1] != "^":
 			if inf.split(",")[3] == (date.datetime.today() - date.timedelta(days=1)).strftime('%Y%m%d'):
 				dat = [
 				telegram.InlineKeyboardButton("Data", callback_data='D' + segno + inf),
@@ -1073,12 +1127,18 @@ def button(update,_: CallbackContext):
 				]
 		else:
 			dat = []
-		
-		if query.data.split(",")[5] == "0":
-			plat = telegram.InlineKeyboardButton("Usa PLATEA", callback_data=segno + change(inf,5,"1",False))
-		else:
-			plat = telegram.InlineKeyboardButton("Usa ISTAT21", callback_data=segno + change(inf,5,"0",False))
+		if query.data[:1] != "^":
+			green = [
+				telegram.InlineKeyboardButton("Green Pass", callback_data='^' + segno + inf),
+				]
 			
+			if query.data.split(",")[5] == "0":
+				plat = telegram.InlineKeyboardButton("Usa PLATEA", callback_data=segno + change(inf,5,"1",False))
+			else:
+				plat = telegram.InlineKeyboardButton("Usa ISTAT21", callback_data=segno + change(inf,5,"0",False))	
+		else:
+			plat = telegram.InlineKeyboardButton("Chiudi GP", callback_data=inf)
+			green = []
 		keyboard = [
 		tastiera,
 		[
@@ -1086,6 +1146,7 @@ def button(update,_: CallbackContext):
 			plat,
 		],	
 		dat,
+		green,
 		[
 			telegram.InlineKeyboardButton("Ultimo aggiornamento", callback_data='A' + inf),
 			telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
@@ -1139,6 +1200,7 @@ def tab():
 	global somministrate
 	global distribuite
 	global file_platea
+	global guariti
 	global dati_istat21
 	global agg
 	global agg2
@@ -1150,6 +1212,7 @@ def tab():
 			somministrate = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-latest.csv')
 			distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
 			file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
+			guariti = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/soggetti-guariti.csv')
 			agg = lastupd()
 		agg2 = date.datetime.now().strftime("%H:%M:%S")
 		time.sleep(90*60)
@@ -1158,12 +1221,14 @@ def forceupd():
 	global somministrate
 	global distribuite
 	global file_platea
+	global guariti
 	global agg
 	global agg2	
 
 	somministrate = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-latest.csv')
 	distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
 	file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
+	guariti = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/soggetti-guariti.csv')
 	agg = lastupd()
 	agg2 = date.datetime.now().strftime("%H:%M:%S")
 		

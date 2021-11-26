@@ -139,9 +139,7 @@ def somministrazioni(som,**kwargs):
 		sum2 += sumpre
 	
 	sum_da = 0
-	for i in som.dose_booster.tolist():
-		sum_da += i
-	for i in som.dose_aggiuntiva.tolist():
+	for i in som.dose_addizionale_booster.tolist():
 		sum_da += i
 	
 	if forn == False:

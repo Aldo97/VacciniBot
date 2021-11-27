@@ -207,7 +207,6 @@ def istat21_show(reg):
 	return string
 
 def greenpass(string,guariti,fascia,reg):
-	string += "\n"
 	if reg and reg != "0":
 		guariti = guariti[guariti.area == reg]
 	
@@ -218,6 +217,8 @@ def greenpass(string,guariti,fascia,reg):
 		guariti = guariti[guariti.fascia_anagrafica == fascia]
 	else:
 		fascia = False
+	
+	string += "\n"
 	
 	_,som2,somJ,_,sompreJ,vaccinatiB = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=270)).strftime('%Y%m%d'))
 	vaccinati2 = som2+somJ-sompreJ

@@ -210,8 +210,12 @@ def greenpass(string,guariti,fascia,reg):
 	if reg and reg != "0":
 		guariti = guariti[guariti.area == reg]
 	
+	if len(fascia.split()) != 1:
+		fascia = False
+		string = string[:string.rfind('\n')]
+	
 	if fascia and fascia != "0":
-		if fascia == "80-89":
+		if fascia == "80-89" or fascia == "90+":
 			fascia = "80+"
 		string += "\nFascia " + fascia
 		guariti = guariti[guariti.fascia_anagrafica == fascia]
@@ -430,7 +434,8 @@ def fascia(info):
 		somJ = som1
 	
 	if fascia != "0" and fascia:
-		string += "\nFascia " + fascia
+		if len(fascia.split()) == 1:
+			string += "\nFascia " + fascia
 	else:
 		if vac:
 			string += "\nPopolazione vaccinabile"

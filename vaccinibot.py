@@ -4,7 +4,7 @@
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
 #    published by the Free Software Foundation, either version 3 of the
-#    License, or any later version.
+#    License, or (at your option) any later version.
 
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -365,9 +365,9 @@ def fascia(info):
 	if data2 == "0" or data2 == "False":
 		data2 = data1
 		
-	if data2 and data2 != data1:
+	if data2 and data2 != data1 and not GP:
 		string += "\ndal " + convert_data(data1) + " al " + convert_data(data2)
-	elif data1:
+	elif data1 and not GP:
 		string += "\ndel " + convert_data(data1)
 		
 	if plat == "0" and not GP:
@@ -458,16 +458,18 @@ def fascia(info):
 		string += "\nGuariti con ciclo primario completato\n" + bar(sompre,po)
 		
 	if forn != "Janssen":
-		if data1 == False:
-			string += "\nCiclo primario completato su almeno 1 dose\n" + bar(som2+somJ-sompreJ,som1+somJ)
 		if forn == False:
 			string += "\nCiclo primario completato con J&J\n" + bar(somJ,po)
-		if data1:
-			string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somm_dose_addizionale_booster,po)
+		if data1 == False:
+			string += "\nCiclo primario completato su almeno 1 dose\n" + bar(som2+somJ-sompreJ,som1+somJ)
 			
 	if somm_dose_addizionale_booster != 0:
 		string += "\nDose addizionale-booster\n" + bar(somm_dose_addizionale_booster,po)
-		string += "\nDose addizionale-booster su ciclo primario\n" + bar(somm_dose_addizionale_booster,som2+somJ-sompreJ,nextended=True)
+		if not data1:
+			string += "\nDose addizionale-booster su ciclo primario\n" + bar(somm_dose_addizionale_booster,som2+somJ-sompreJ,nextended=True)
+			
+	if data1:
+		string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somm_dose_addizionale_booster,po)
 	
 	if fascia == False and data1 == False:	
 		if forn == "Janssen":

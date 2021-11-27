@@ -224,10 +224,10 @@ def greenpass(string,guariti,fascia,reg):
 	guaritiGP=0
 	for i in guariti.totale_guariti.tolist():
 		guaritiGP += i
-	string += "\n" + "Guariti da meno di 6 mesi:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB)
-	string += "\n" + "Ciclo primario completato da 9 mesi:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB)
+	string += "\n" + "Guariti:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB)
+	string += "\n" + "Ciclo primario completato:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB)
 	string += "\n" + "Vaccinati con addizionale-booster:\n" + bar(vaccinatiB,guaritiGP+vaccinati2+vaccinatiB)
-	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati"
+	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati\nIl green pass per guariti dura 6 mesi, quello per vaccinati 9 mesi."
 	return string
 
 def vaccinati(update,CallbackContext):
@@ -440,26 +440,28 @@ def fascia(info):
 	
 	if mancanti:
 		string += "\nNon vaccinati\n" + bar(po-som1-somJ,po)
-		string += "\nNon immunizzati completamente\n" + bar(po-som2-somJ+sompreJ,po)
+		string += "\nSenza ciclo primario completato\n" + bar(po-som2-somJ+sompreJ,po)
+		string += "\nSenza addizionale-booster\n" + bar(po-somm_dose_addizionale_booster,po)
 		return string
 		
 	
 	if forn == False or forn != "Janssen":
 		string += "\nVaccinati con almeno 1 dose\n" + bar(som1+somJ,po,nextended=True)	
-	string += "\nCompletamente immunizzati\n" + bar(som2+somJ-sompreJ,po,nextended=True)
+	string += "\nCiclo primario completato\n" + bar(som2+somJ-sompreJ,po,nextended=True)
 	if sompre != 0:
-		string += "\nGuariti completamente immunizzati\n" + bar(sompre,po)
-
-	if somm_dose_addizionale_booster != 0:
-		string += "\nDose addizionale-booster\n" + bar(somm_dose_addizionale_booster,po)
+		string += "\nGuariti con ciclo primario completato\n" + bar(sompre,po)
 		
 	if forn != "Janssen":
 		if data1 == False:
-			string += "\nCompletamente immunizzati su almeno 1 dose\n" + bar(som2+somJ-sompreJ,som1+somJ)
+			string += "\nCiclo primario completato su almeno 1 dose\n" + bar(som2+somJ-sompreJ,som1+somJ)
 		if forn == False:
-			string += "\nCompletamente vaccinati con J&J\n" + bar(somJ,po)
+			string += "\nCiclo primario completato con J&J\n" + bar(somJ,po)
 		if data1:
 			string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somm_dose_addizionale_booster,po)
+			
+	if somm_dose_addizionale_booster != 0:
+		string += "\nDose addizionale-booster\n" + bar(somm_dose_addizionale_booster,po)
+		string += "\nDose addizionale-booster su ciclo primario\n" + bar(somm_dose_addizionale_booster,som2+somJ-sompreJ,nextended=True)
 	
 	if fascia == False and data1 == False:	
 		if forn == "Janssen":
@@ -483,7 +485,7 @@ def vaccinifascia(string,reg,forn,data1,data2,dose,plat):
 		elif dose == 2:
 			if forn == "Janssen":
 				somJ = som1
-			string += "\nCompletamente immunizzati fascia " + i + "\n" + bar(som2+somJ-sompreJ,po,nextended=True)
+			string += "\nCiclo primario completato fascia " + i + "\n" + bar(som2+somJ-sompreJ,po,nextended=True)
 		else:
 			string += "\nDosi addizionali-booster fascia " + i + "\n" + bar(som_da,po,nextended=True)
 	return string
@@ -655,7 +657,7 @@ def button(update,_: CallbackContext):
 				if query.data.split(",")[3] == "0":
 					sufascia = [
 					telegram.InlineKeyboardButton("Indietro", callback_data=inf),
-					telegram.InlineKeyboardButton("Non immunizzati", callback_data="f-" + inf),
+					telegram.InlineKeyboardButton("Non vaccinati", callback_data="f-" + inf),
 					telegram.InlineKeyboardButton("Vaccini usati su fascia", callback_data='f*' + inf),
 					]
 				else:
@@ -666,7 +668,7 @@ def button(update,_: CallbackContext):
 			else:
 				sufascia = [
 				telegram.InlineKeyboardButton("Indietro", callback_data=segno + inf),
-				telegram.InlineKeyboardButton("Immunizzati", callback_data="f" + inf),
+				telegram.InlineKeyboardButton("Vaccinati", callback_data="f" + inf),
 				]
 		else:
 			sufascia = [
@@ -740,14 +742,14 @@ def button(update,_: CallbackContext):
 		elif segno == "%":
 			sommfascia = [
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="v" + inf),
-			telegram.InlineKeyboardButton("Completamente immunizzati", callback_data="v&" + inf),
+			telegram.InlineKeyboardButton("Ciclo primario", callback_data="v&" + inf),
 			telegram.InlineKeyboardButton("Dose booster", callback_data="v$" + inf),
 			]
 		elif segno == "$":
 			sommfascia = [
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="v" + inf),
 			telegram.InlineKeyboardButton("Almeno una dose", callback_data="v%" + inf),
-			telegram.InlineKeyboardButton("Completamente immunizzati", callback_data="v&" + inf),
+			telegram.InlineKeyboardButton("Ciclo primario", callback_data="v&" + inf),
 			]
 		elif segno == "&":
 			sommfascia = [
@@ -789,13 +791,13 @@ def button(update,_: CallbackContext):
 			sufascia2 = []
 		elif segno == "-":
 			sufascia = [
-			telegram.InlineKeyboardButton("Immunizzati", callback_data="r" + inf),
+			telegram.InlineKeyboardButton("Vaccinati", callback_data="r" + inf),
 			]
 			sufascia2 = []
 		elif segno == "%":
 			sufascia = [
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="r" + inf),
-			telegram.InlineKeyboardButton("Completamente immunizzati", callback_data="r&" + inf),
+			telegram.InlineKeyboardButton("Ciclo primario", callback_data="r&" + inf),
 			telegram.InlineKeyboardButton("Dose booster", callback_data="r$" + inf),
 			]
 			sufascia2 = []
@@ -803,7 +805,7 @@ def button(update,_: CallbackContext):
 			sufascia = [
 			telegram.InlineKeyboardButton("Visualizzazione normale", callback_data="r" + inf),
 			telegram.InlineKeyboardButton("Almeno una dose", callback_data="r%" + inf),
-			telegram.InlineKeyboardButton("Completamente immunizzati", callback_data="r&" + inf),
+			telegram.InlineKeyboardButton("Ciclo primario", callback_data="r&" + inf),
 			]
 			sufascia2 = []
 		elif segno == "&":
@@ -819,7 +821,7 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Vaccini per fascia", callback_data="r%" + inf),
 			]
 			sufascia2 = [
-			telegram.InlineKeyboardButton("Non immunizzati", callback_data="r-" + inf),
+			telegram.InlineKeyboardButton("Non vaccinati", callback_data="r-" + inf),
 			telegram.InlineKeyboardButton("Vaccini usati su fascia", callback_data='r*' + inf),
 			]
 		else:

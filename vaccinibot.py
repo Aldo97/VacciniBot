@@ -1138,9 +1138,12 @@ def button(update,_: CallbackContext):
 		else:
 			dat = []
 		if query.data[:1] != "^":
-			green = [
-				telegram.InlineKeyboardButton("Green Pass", callback_data='^' + segno + inf),
-				]
+			if query.data[:1] != "+" and query.data[:1] != "&" and query.data[:1] != "%" and query.data[:1] != "$" and query.data[:1] != "*" and query.data[:1] != "-":
+				green = [
+					telegram.InlineKeyboardButton("Green Pass", callback_data='^' + segno + inf),
+					]
+			else:
+				green = []
 			
 			if query.data.split(",")[5] == "0":
 				plat = telegram.InlineKeyboardButton("Usa PLATEA", callback_data=segno + change(inf,5,"1",False))

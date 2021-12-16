@@ -167,7 +167,7 @@ def istat21(dati_istat21,fascia,reg):
 	
 	if fascia == "tot":
 		sumN = 0
-		sumV = sum - dati_istat21.loc[dati_istat21.fascia == "0-11", "value"].tolist()[0]
+		sumV = sum - dati_istat21.loc[dati_istat21.fascia == "0-4", "value"].tolist()[0]
 	else:
 		sumV = 0
 		
@@ -193,7 +193,8 @@ def istat21_show(reg):
 	else:
 		reg_name = file_platea.loc[file_platea.area == reg].nome_area.tolist()[0]
 
-	fascia = ["0-11","12-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89","90+"]
+	fascia = dati_istat21.loc[dati_istat21.area == "IT", "fascia"].tolist()
+	fascia.remove("tot")
 	
 	pop = dati_istat21[dati_istat21.area == reg]
 	tot = pop.loc[pop.fascia == "tot", "value"].tolist()[0]
@@ -232,7 +233,7 @@ def greenpass(string,guariti,fascia,reg):
 	string += "\n" + "Guariti:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB)
 	string += "\n" + "Ciclo primario completato:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB)
 	string += "\n" + "Vaccinati con addizionale-booster:\n" + bar(vaccinatiB,guaritiGP+vaccinati2+vaccinatiB)
-	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati\nIl green pass per guariti dura 6 mesi, quello per vaccinati 9 mesi."
+	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati\nIl green pass per guariti dura 6 mesi, quello per vaccinati 9 mesi.\nVengono contati anche i green pass consegnati a minori di 11 anni."
 	return string
 
 def vaccinati(update,CallbackContext):
@@ -339,6 +340,8 @@ def fascia(info):
 		forn = "Pfizer/BioNTech"
 	elif forn == "Astrazeneca" or forn == "Vaxzevria" or forn == "Az":
 		forn = "Vaxzevria (AstraZeneca)"
+	elif forn == "PfizerP":
+		forn = "Pfizer Pediatrico"
 	
 	if mancanti:
 		forn = False
@@ -354,6 +357,12 @@ def fascia(info):
 		string = "Italia"
 		
 	if forn == "0" or forn == "False":
+		forn = False
+	
+	if forn == "Pfizer Pediatrico" and fascia != "0":
+		forn = False
+	
+	if fascia == "05-11":
 		forn = False
 	
 	if forn and fasciaavaccini == False:
@@ -383,10 +392,10 @@ def fascia(info):
 		string += "\nOver 50"
 	elif fascia == "49" and sommafascia == False:
 		fascia = "12-19 20-29 30-39 40-49"
-		string += "\nUnder 50"
+		string += "\nUnder 50 (no under 12)"
 	elif fascia == "30" and sommafascia == False:
 		fascia = "12-19 20-29"
-		string += "\nUnder 30"
+		string += "\nUnder 30 (no under 12)"
 	
 	if sommafascia:
 		return sommfascia(string,reg,forn,data1,data2,plat)
@@ -458,9 +467,9 @@ def fascia(info):
 		string += "\nGuariti con ciclo primario completato\n" + bar(sompre,po)
 		
 	if forn != "Janssen":
-		if forn == False:
+		if forn == False and fascia != "05-11":
 			string += "\nCiclo primario completato con J&J\n" + bar(somJ,po)
-		if data1 == False:
+		if data1 == False and som1+somJ > 0:
 			string += "\nCiclo primario completato su almeno 1 dose\n" + bar(som2+somJ-sompreJ,som1+somJ)
 			
 	if somm_dose_addizionale_booster != 0:
@@ -480,9 +489,9 @@ def fascia(info):
 	
 def vaccinifascia(string,reg,forn,data1,data2,dose,plat):
 	if plat == "0":
-		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
+		fascia = "05-11 12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
 	else:
-		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
+		fascia = "05-11 12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	string += "\n"
 	for i in fascia.split():
 		som1,som2,somJ,sompre,sompreJ,som_da = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
@@ -500,9 +509,9 @@ def vaccinifascia(string,reg,forn,data1,data2,dose,plat):
 
 def sommfascia(string,reg,forn,data1,data2,plat):
 	if plat == "0":
-		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
+		fascia = "05-11 12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
 	else:
-		fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
+		fascia = "05-11 12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	s=[]
 	for i in fascia.split():
 		som1,som2,somJ,sompre,sompreJ,som_da = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
@@ -528,6 +537,12 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 			som1,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=False,forn=i,data1=data1,data2=data2)
 			string += "\nQuota di vaccinati con " + i + "\n" + bar(som1,po)
 		return string
+	
+	if fascia == "05-11":
+		po,_ = pop(plat,reg=reg,fascia="05-11")
+		som1,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia="05-11",data1=data1,data2=data2)
+		string += "\nQuota di vaccinati con Pfizer Pediatrico\n" + bar(som1,po)
+		return string
 	data=[]
 	popol=[]
 	
@@ -552,7 +567,7 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 	
 def button(update,_: CallbackContext):
 	query = update.callback_query
-	
+
 	if query.data == "Chiudi":
 		try:
 			query.edit_message_text(text=query.message.text)
@@ -724,6 +739,7 @@ def button(update,_: CallbackContext):
 
 		keyboard = [
 		[
+			telegram.InlineKeyboardButton("05-11", callback_data='f' + segno + change(inf,0,"05-11",False)),
 			telegram.InlineKeyboardButton("12-19", callback_data='f' + segno + change(inf,0,"12-19",False)),
 			telegram.InlineKeyboardButton("20-29", callback_data='f' + segno + change(inf,0,"20-29",False)),
 			telegram.InlineKeyboardButton("30-39", callback_data='f' + segno + change(inf,0,"30-39",False)),
@@ -770,19 +786,32 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Somministrazioni per fascia", callback_data="v+" + inf),
 			telegram.InlineKeyboardButton("Vaccini per fascia", callback_data="v%" + inf),
 			]
-			
-		keyboard = [
-		[
+		
+		if inf.split(",")[0] != "05-11":
+			if inf.split(",")[0] == "0" or inf.split(",")[0] == "1":
+				pediatrico = [
+				telegram.InlineKeyboardButton("Pfizer Pediatrico", callback_data="v" + segno + change(inf,2,"PfizerP",False)),
+				telegram.InlineKeyboardButton("Tutti i vaccini", callback_data="v" + segno + change(inf,2,"0",False)),
+				]
+			else:
+				pediatrico = [telegram.InlineKeyboardButton("Tutti i vaccini", callback_data="v" + segno + change(inf,2,"0",False)),]
+			vax1 =[
 			telegram.InlineKeyboardButton("Pfizer", callback_data="v" + segno + change(inf,2,"Pfizer",False)),
 			telegram.InlineKeyboardButton("Moderna", callback_data="v" + segno + change(inf,2,"Moderna",False)),
-		],
-		[
+			]
+			vax2 = [
 			telegram.InlineKeyboardButton("Astrazeneca", callback_data="v" + segno + change(inf,2,"Az",False)),
 			telegram.InlineKeyboardButton("Janssen", callback_data="v" + segno + change(inf,2,"J&J",False)),
-		],
-		[
-			telegram.InlineKeyboardButton("Tutti i vaccini", callback_data="v" + segno + change(inf,2,"0",False)),
-		],
+			]
+		else:
+			vax1 = []
+			vax2 = []
+			pediatrico = []
+
+		keyboard = [
+			vax1,
+			vax2,
+			pediatrico,
 			sommfascia,
 		[
 			telegram.InlineKeyboardButton("Indietro", callback_data=segno + inf),
@@ -828,10 +857,16 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Somministrazioni per fascia", callback_data="r+" + inf),
 			telegram.InlineKeyboardButton("Vaccini per fascia", callback_data="r%" + inf),
 			]
-			sufascia2 = [
-			telegram.InlineKeyboardButton("Non vaccinati", callback_data="r-" + inf),
-			telegram.InlineKeyboardButton("Vaccini usati su fascia", callback_data='r*' + inf),
-			]
+			if inf[0] != "05-11":
+			
+				sufascia2 = [
+				telegram.InlineKeyboardButton("Non vaccinati", callback_data="r-" + inf),
+				telegram.InlineKeyboardButton("Vaccini usati su fascia", callback_data='r*' + inf),
+				]
+			else:
+				sufascia2 = [
+				telegram.InlineKeyboardButton("Non vaccinati", callback_data="r-" + inf),
+				]
 		else:
 			sufascia = []
 			sufascia2 = []
@@ -1165,7 +1200,7 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
 		],
 		]
-
+		
 	if query.data[:1] != "D" and len(query.data.split(",")[3]) != 4 and len(query.data.split(",")[4]) != 4 and len(query.data.split(",")[3]) != 6 and len(query.data.split(",")[4]) != 6 and query.data != "Chiudi" and query.data[:1] != "p":
 		string += "\nUltimo controllo alle: " + agg2
 

@@ -1,5 +1,6 @@
 area,Territorio,fascia,value
-IT,Italia,0-11,5858324
+IT,Italia,0-4,2185829
+IT,Italia,05-11,3672495
 IT,Italia,12-19,4556922
 IT,Italia,20-29,6041667
 IT,Italia,30-39,6747378
@@ -10,7 +11,8 @@ IT,Italia,70-79,5965244
 IT,Italia,80-89,3665286
 IT,Italia,90+,815140
 IT,Italia,tot,59257566
-ABR,Abruzzo,0-11,120610
+ABR,Abruzzo,0-4,44908
+ABR,Abruzzo,05-11,75702
 ABR,Abruzzo,12-19,92568
 ABR,Abruzzo,20-29,128330
 ABR,Abruzzo,30-39,148176
@@ -21,7 +23,8 @@ ABR,Abruzzo,70-79,131536
 ABR,Abruzzo,80-89,84626
 ABR,Abruzzo,90+,20394
 ABR,Abruzzo,tot,1285256
-BAS,Basilicata,0-11,48622
+BAS,Basilicata,0-4,18562
+BAS,Basilicata,05-11,30060
 BAS,Basilicata,12-19,41004
 BAS,Basilicata,20-29,59650
 BAS,Basilicata,30-39,64519
@@ -32,7 +35,8 @@ BAS,Basilicata,70-79,52557
 BAS,Basilicata,80-89,35786
 BAS,Basilicata,90+,8202
 BAS,Basilicata,tot,547579
-PAB,Bolzano / Bozen,0-11,65516
+PAB,Bolzano / Bozen,0-4,26678
+PAB,Bolzano / Bozen,05-11,38838
 PAB,Bolzano / Bozen,12-19,46097
 PAB,Bolzano / Bozen,20-29,61426
 PAB,Bolzano / Bozen,30-39,62922
@@ -43,7 +47,8 @@ PAB,Bolzano / Bozen,70-79,46424
 PAB,Bolzano / Bozen,80-89,27677
 PAB,Bolzano / Bozen,90+,6323
 PAB,Bolzano / Bozen,tot,533715
-CAL,Calabria,0-11,189111
+CAL,Calabria,0-4,73547
+CAL,Calabria,05-11,115564
 CAL,Calabria,12-19,146828
 CAL,Calabria,20-29,208920
 CAL,Calabria,30-39,232935
@@ -54,7 +59,8 @@ CAL,Calabria,70-79,177666
 CAL,Calabria,80-89,108240
 CAL,Calabria,90+,24235
 CAL,Calabria,tot,1877728
-CAM,Campania,0-11,614271
+CAM,Campania,0-4,236166
+CAM,Campania,05-11,378105
 CAM,Campania,12-19,500450
 CAM,Campania,20-29,685126
 CAM,Campania,30-39,706752
@@ -65,7 +71,8 @@ CAM,Campania,70-79,491191
 CAM,Campania,80-89,258456
 CAM,Campania,90+,51991
 CAM,Campania,tot,5679759
-EMR,Emilia-Romagna,0-11,439909
+EMR,Emilia-Romagna,0-4,163124
+EMR,Emilia-Romagna,05-11,276785
 EMR,Emilia-Romagna,12-19,327229
 EMR,Emilia-Romagna,20-29,420475
 EMR,Emilia-Romagna,30-39,495231
@@ -76,7 +83,8 @@ EMR,Emilia-Romagna,70-79,454505
 EMR,Emilia-Romagna,80-89,299028
 EMR,Emilia-Romagna,90+,72511
 EMR,Emilia-Romagna,tot,4445549
-FVG,Friuli-Venezia Giulia,0-11,108079
+FVG,Friuli-Venezia Giulia,0-4,39710
+FVG,Friuli-Venezia Giulia,05-11,68369
 FVG,Friuli-Venezia Giulia,12-19,84835
 FVG,Friuli-Venezia Giulia,20-29,109577
 FVG,Friuli-Venezia Giulia,30-39,123868
@@ -87,7 +95,8 @@ FVG,Friuli-Venezia Giulia,70-79,140238
 FVG,Friuli-Venezia Giulia,80-89,85322
 FVG,Friuli-Venezia Giulia,90+,20357
 FVG,Friuli-Venezia Giulia,tot,1198753
-LAZ,Lazio,0-11,573233
+LAZ,Lazio,0-4,209710
+LAZ,Lazio,05-11,363523
 LAZ,Lazio,12-19,431221
 LAZ,Lazio,20-29,558855
 LAZ,Lazio,30-39,665641
@@ -98,7 +107,8 @@ LAZ,Lazio,70-79,551477
 LAZ,Lazio,80-89,338530
 LAZ,Lazio,90+,73757
 LAZ,Lazio,tot,5720796
-LIG,Liguria,0-11,125739
+LIG,Liguria,0-4,46122
+LIG,Liguria,05-11,79617
 LIG,Liguria,12-19,101627
 LIG,Liguria,20-29,136820
 LIG,Liguria,30-39,147115
@@ -109,7 +119,8 @@ LIG,Liguria,70-79,182496
 LIG,Liguria,80-89,125677
 LIG,Liguria,90+,30599
 LIG,Liguria,tot,1509805
-LOM,Lombardia,0-11,1022605
+LOM,Lombardia,0-4,380145
+LOM,Lombardia,05-11,642460
 LOM,Lombardia,12-19,769069
 LOM,Lombardia,20-29,983209
 LOM,Lombardia,30-39,1145186
@@ -120,7 +131,8 @@ LOM,Lombardia,70-79,988111
 LOM,Lombardia,80-89,615067
 LOM,Lombardia,90+,128433
 LOM,Lombardia,tot,9966992
-MAR,Marche,0-11,141802
+MAR,Marche,0-4,51398
+MAR,Marche,05-11,90404
 MAR,Marche,12-19,110108
 MAR,Marche,20-29,145997
 MAR,Marche,30-39,163324
@@ -131,7 +143,8 @@ MAR,Marche,70-79,156000
 MAR,Marche,80-89,108153
 MAR,Marche,90+,25873
 MAR,Marche,tot,1501406
-MOL,Molise,0-11,25237
+MOL,Molise,0-4,9521
+MOL,Molise,05-11,15716
 MOL,Molise,12-19,20520
 MOL,Molise,20-29,31281
 MOL,Molise,30-39,33973
@@ -142,7 +155,8 @@ MOL,Molise,70-79,30617
 MOL,Molise,80-89,20753
 MOL,Molise,90+,5430
 MOL,Molise,tot,296547
-PIE,Piemonte,0-11,398343
+PIE,Piemonte,0-4,146928
+PIE,Piemonte,05-11,251415
 PIE,Piemonte,12-19,306962
 PIE,Piemonte,20-29,404501
 PIE,Piemonte,30-39,453297
@@ -153,7 +167,8 @@ PIE,Piemonte,70-79,473035
 PIE,Piemonte,80-89,307031
 PIE,Piemonte,90+,65760
 PIE,Piemonte,tot,4273210
-PUG,Puglia,0-11,381375
+PUG,Puglia,0-4,142008
+PUG,Puglia,05-11,239367
 PUG,Puglia,12-19,315971
 PUG,Puglia,20-29,435687
 PUG,Puglia,30-39,453251
@@ -164,7 +179,8 @@ PUG,Puglia,70-79,395276
 PUG,Puglia,80-89,224826
 PUG,Puglia,90+,48131
 PUG,Puglia,tot,3926931
-SAR,Sardegna,0-11,132050
+SAR,Sardegna,0-4,46660
+SAR,Sardegna,05-11,85390
 SAR,Sardegna,12-19,107888
 SAR,Sardegna,20-29,149270
 SAR,Sardegna,30-39,180864
@@ -175,7 +191,8 @@ SAR,Sardegna,70-79,172099
 SAR,Sardegna,80-89,97957
 SAR,Sardegna,90+,22038
 SAR,Sardegna,tot,1598225
-SIC,Sicilia,0-11,504267
+SIC,Sicilia,0-4,195131
+SIC,Sicilia,05-11,309136
 SIC,Sicilia,12-19,398061
 SIC,Sicilia,20-29,551159
 SIC,Sicilia,30-39,581042
@@ -186,7 +203,8 @@ SIC,Sicilia,70-79,460198
 SIC,Sicilia,80-89,265138
 SIC,Sicilia,90+,55691
 SIC,Sicilia,tot,4840876
-TOS,Toscana,0-11,338714
+TOS,Toscana,0-4,123730
+TOS,Toscana,05-11,214984
 TOS,Toscana,12-19,265297
 TOS,Toscana,20-29,338693
 TOS,Toscana,30-39,395198
@@ -197,7 +215,8 @@ TOS,Toscana,70-79,406475
 TOS,Toscana,80-89,263150
 TOS,Toscana,90+,62917
 TOS,Toscana,tot,3668333
-PAT,Trento,0-11,58871
+PAT,Trento,0-4,22142
+PAT,Trento,05-11,36729
 PAT,Trento,12-19,44711
 PAT,Trento,20-29,58234
 PAT,Trento,30-39,61070
@@ -208,7 +227,8 @@ PAT,Trento,70-79,52872
 PAT,Trento,80-89,30673
 PAT,Trento,90+,8005
 PAT,Trento,tot,544745
-UMB,Umbria,0-11,79780
+UMB,Umbria,0-4,28873
+UMB,Umbria,05-11,50907
 UMB,Umbria,12-19,62999
 UMB,Umbria,20-29,81178
 UMB,Umbria,30-39,95565
@@ -219,7 +239,8 @@ UMB,Umbria,70-79,94797
 UMB,Umbria,80-89,63188
 UMB,Umbria,90+,15591
 UMB,Umbria,tot,865013
-VDA,Valle d'Aosta / Vallée d'Aoste,0-11,12043
+VDA,Valle d'Aosta / Vallée d'Aoste,0-4,4333
+VDA,Valle d'Aosta / Vallée d'Aoste,05-11,7710
 VDA,Valle d'Aosta / Vallée d'Aoste,12-19,9436
 VDA,Valle d'Aosta / Vallée d'Aoste,20-29,11940
 VDA,Valle d'Aosta / Vallée d'Aoste,30-39,13010
@@ -230,7 +251,8 @@ VDA,Valle d'Aosta / Vallée d'Aoste,70-79,12953
 VDA,Valle d'Aosta / Vallée d'Aoste,80-89,7803
 VDA,Valle d'Aosta / Vallée d'Aoste,90+,1781
 VDA,Valle d'Aosta / Vallée d'Aoste,tot,123895
-VEN,Veneto,0-11,478147
+VEN,Veneto,0-4,176433
+VEN,Veneto,05-11,301714
 VEN,Veneto,12-19,374041
 VEN,Veneto,20-29,481339
 VEN,Veneto,30-39,524439

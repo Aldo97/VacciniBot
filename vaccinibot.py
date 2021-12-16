@@ -379,9 +379,9 @@ def fascia(info):
 	elif data1 and not GP:
 		string += "\ndel " + convert_data(data1)
 		
-	if plat == "0" and not GP:
+	if plat == "0" and not GP and not sommafascia:
 		string += "\nDati ISTAT21"
-	elif not GP:
+	elif not GP and not sommafascia:
 		string += "\nFile PLATEA"
 
 	if fascia == "50" and sommafascia == False:

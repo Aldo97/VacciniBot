@@ -57,6 +57,11 @@ def consegne(dis,**kwargs):
 	data=kwargs.get('data',False)
 	reg=kwargs.get('reg',False)
 	forn=kwargs.get('forn',False)
+	over12=kwargs.get('over12',False)
+	under12=kwargs.get('under12',False)
+	
+	if under12:
+		forn = "Pfizer Pediatrico"
 		
 	if data:
 		dis = dis[pd.to_datetime(dis['data_consegna'], format='%Y-%m-%d') <= date.datetime.strptime(data,'%Y%m%d')]
@@ -77,6 +82,10 @@ def consegne(dis,**kwargs):
 		
 	if sumJ != 0:
 		sum-=sumJ
+	
+	if over12:
+		for i in dis[dis.fornitore == "Pfizer Pediatrico"].numero_dosi.tolist():
+			sum-=i
 
 	return sum,sumJ
 	
@@ -359,7 +368,7 @@ def fascia(info):
 	if forn == "0" or forn == "False":
 		forn = False
 	
-	if forn == "Pfizer Pediatrico" and fascia != "0":
+	if forn == "Pfizer Pediatrico" and fascia != "0" and not sommafascia and not vacciniafascia:
 		forn = False
 	
 	if fascia == "05-11":
@@ -384,6 +393,7 @@ def fascia(info):
 	elif not GP and not sommafascia:
 		string += "\nFile PLATEA"
 
+	over12 = False
 	if fascia == "50" and sommafascia == False:
 		if plat == "0":
 			fascia = "50-59 60-69 70-79 80-89 90+"
@@ -396,6 +406,13 @@ def fascia(info):
 	elif fascia == "30" and sommafascia == False:
 		fascia = "12-19 20-29"
 		string += "\nUnder 30 (no under 12)"
+	elif fascia == "12" and sommafascia == False:
+		if plat == "0":
+			fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80-89 90+"
+		else:
+			fascia = "12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
+		string += "\nOver 12"
+		over12 = True
 	
 	if sommafascia:
 		return sommfascia(string,reg,forn,data1,data2,plat)
@@ -436,8 +453,12 @@ def fascia(info):
 		pov += tv
 		somm_dose_addizionale_booster += da
 		
-			
-	cons,consJ = consegne(distribuite,reg=reg,forn=forn)
+	if fascia == "05-11":
+		under12 = True
+	else:
+		under12 = False
+		
+	cons,consJ = consegne(distribuite,reg=reg,forn=forn,over12=over12,under12=under12)
 	
 	if forn == "Janssen":
 		somJ = som1
@@ -480,7 +501,7 @@ def fascia(info):
 	if data1:
 		string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somm_dose_addizionale_booster,po)
 	
-	if fascia == False and data1 == False:	
+	if (fascia == False or over12 or under12) and data1 == False:	
 		if forn == "Janssen":
 			somJ = sompre
 		string += "\nDosi somministrate su consegnate\n" + bar(som1+som2+somJ-sompre+somm_dose_addizionale_booster,cons+consJ)
@@ -718,7 +739,7 @@ def button(update,_: CallbackContext):
 				over70 =[
 				telegram.InlineKeyboardButton("70-79", callback_data='f' + segno + change(inf,0,"70-79",False)),
 				telegram.InlineKeyboardButton("80+", callback_data='f' + segno + change(inf,0,"80+",False)),
-				telegram.InlineKeyboardButton("Over 12", callback_data='f' + segno + change(inf,0,"1",False)),
+				telegram.InlineKeyboardButton("Vaccinabili", callback_data='f' + segno + change(inf,0,"1",False)),
 				]
 			else:
 				over70 =[
@@ -732,6 +753,7 @@ def button(update,_: CallbackContext):
 			over = []
 		else:
 			over =[
+			telegram.InlineKeyboardButton("Over 12", callback_data='f' + segno + change(inf,0,"12",False)),
 			telegram.InlineKeyboardButton("Over 50", callback_data='f' + segno + change(inf,0,"50",False)),
 			telegram.InlineKeyboardButton("Under 50", callback_data='f' + segno + change(inf,0,"49",False)),
 			telegram.InlineKeyboardButton("Under 30", callback_data='f' + segno + change(inf,0,"30",False)),
@@ -788,7 +810,7 @@ def button(update,_: CallbackContext):
 			]
 		
 		if inf.split(",")[0] != "05-11":
-			if inf.split(",")[0] == "0" or inf.split(",")[0] == "1":
+			if inf.split(",")[0] == "0" or inf.split(",")[0] == "1" or segno == "+" or segno == "%" or segno == "$" or segno == "&":
 				pediatrico = [
 				telegram.InlineKeyboardButton("Pfizer Pediatrico", callback_data="v" + segno + change(inf,2,"PfizerP",False)),
 				telegram.InlineKeyboardButton("Tutti i vaccini", callback_data="v" + segno + change(inf,2,"0",False)),

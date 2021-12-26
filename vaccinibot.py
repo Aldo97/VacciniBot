@@ -93,7 +93,9 @@ def bar(valore,tot,**kwargs):
 	nextended = kwargs.get("nextended", False)
 	perc = round(valore*100/tot,1)
 	progresso = int(27 * valore // tot)
-	if valore / tot <= 1 or nextended:
+	if valore <= tot or nextended:
+		if progresso > 27:
+			progresso = 27
 		bar = '█' * progresso + '░' * (27 - progresso)
 		return f'\r|{bar}| \n{perc}%     (`{valore}`/`{tot}`)'
 	else:
@@ -210,7 +212,7 @@ def istat21_show(reg):
 	string = reg_name + "\nPopolazione di riferimento (ISTAT21)\n"
 	
 	for i in fascia:
-		string += "\nFascia " + str(i) + ": " + bar(pop.loc[pop.fascia == i, "value"].tolist()[0],tot)
+		string += "\nFascia " + str(i) + ":\n" + bar(pop.loc[pop.fascia == i, "value"].tolist()[0],tot)
 	
 	string += "\n\nPopolazione totale: " + str(tot)
 	

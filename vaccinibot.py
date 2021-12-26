@@ -91,7 +91,7 @@ def consegne(dis,**kwargs):
 	
 def bar(valore,tot,**kwargs):	
 	nextended = kwargs.get("nextended", False)
-	perc = round(valore*100/tot,2)
+	perc = round(valore*100/tot,1)
 	progresso = int(27 * valore // tot)
 	if valore / tot <= 1 or nextended:
 		bar = '█' * progresso + '░' * (27 - progresso)

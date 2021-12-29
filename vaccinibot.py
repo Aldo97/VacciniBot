@@ -1052,28 +1052,6 @@ def button(update,_: CallbackContext):
 				],
 				]
 			else:
-				if query.data.split(",")[pos][-2:] == "01" and query.data.split(",")[pos][-2:] == "03" and query.data.split(",")[pos][-2:] == "05" and query.data.split(",")[pos][-2:] == "07" and query.data.split(",")[pos][-2:] == "08" and query.data.split(",")[pos][-2:] == "10" and query.data.split(",")[pos][-2:] == "12":
-					giorni1 = [
-						telegram.InlineKeyboardButton("26", callback_data='l' + segno + change(inf,pos,"26",True)),
-						telegram.InlineKeyboardButton("27", callback_data='l' + segno + change(inf,pos,"27",True)),
-						telegram.InlineKeyboardButton("28", callback_data='l' + segno + change(inf,pos,"28",True)),
-						telegram.InlineKeyboardButton("29", callback_data='l' + segno + change(inf,pos,"29",True)),
-						telegram.InlineKeyboardButton("30", callback_data='l' + segno + change(inf,pos,"30",True)),
-						]
-					giorni2 = [
-						telegram.InlineKeyboardButton("31", callback_data='l' + segno + change(inf,pos,"31",True)),
-						telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
-						]
-				if query.data.split(",")[pos][-2:] == "02" and query.data.split(",")[pos][:2] == 2020:
-					giorni1 = [
-						telegram.InlineKeyboardButton("26", callback_data='l' + segno + change(inf,pos,"26",True)),
-						telegram.InlineKeyboardButton("27", callback_data='l' + segno + change(inf,pos,"27",True)),
-						telegram.InlineKeyboardButton("28", callback_data='l' + segno + change(inf,pos,"28",True)),
-						telegram.InlineKeyboardButton("29", callback_data='l' + segno + change(inf,pos,"29",True)),
-						]
-					giorni2 = [
-						telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
-						]
 				if query.data.split(",")[pos][-2:] == "02":
 					giorni1 = [
 						telegram.InlineKeyboardButton("26", callback_data='l' + segno + change(inf,pos,"26",True)),
@@ -1084,16 +1062,29 @@ def button(update,_: CallbackContext):
 						telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
 						]
 				else:
-					giorni1 = [
-						telegram.InlineKeyboardButton("26", callback_data='l' + segno + change(inf,pos,"26",True)),
-						telegram.InlineKeyboardButton("27", callback_data='l' + segno + change(inf,pos,"27",True)),
-						telegram.InlineKeyboardButton("28", callback_data='l' + segno + change(inf,pos,"28",True)),
-						telegram.InlineKeyboardButton("29", callback_data='l' + segno + change(inf,pos,"29",True)),
-						telegram.InlineKeyboardButton("30", callback_data='l' + segno + change(inf,pos,"30",True)),
-						]
-					giorni2 = [
-						telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
-						]
+					if query.data.split(",")[pos][-2:] == "01" or query.data.split(",")[pos][-2:] == "03" or query.data.split(",")[pos][-2:] == "05" or query.data.split(",")[pos][-2:] == "07" or query.data.split(",")[pos][-2:] == "08" or query.data.split(",")[pos][-2:] == "10" or query.data.split(",")[pos][-2:] == "12":
+						giorni1 = [
+							telegram.InlineKeyboardButton("26", callback_data='l' + segno + change(inf,pos,"26",True)),
+							telegram.InlineKeyboardButton("27", callback_data='l' + segno + change(inf,pos,"27",True)),
+							telegram.InlineKeyboardButton("28", callback_data='l' + segno + change(inf,pos,"28",True)),
+							telegram.InlineKeyboardButton("29", callback_data='l' + segno + change(inf,pos,"29",True)),
+							telegram.InlineKeyboardButton("30", callback_data='l' + segno + change(inf,pos,"30",True)),
+							]
+						giorni2 = [
+							telegram.InlineKeyboardButton("31", callback_data='l' + segno + change(inf,pos,"31",True)),
+							telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
+							]
+					else:
+						giorni1 = [
+							telegram.InlineKeyboardButton("26", callback_data='l' + segno + change(inf,pos,"26",True)),
+							telegram.InlineKeyboardButton("27", callback_data='l' + segno + change(inf,pos,"27",True)),
+							telegram.InlineKeyboardButton("28", callback_data='l' + segno + change(inf,pos,"28",True)),
+							telegram.InlineKeyboardButton("29", callback_data='l' + segno + change(inf,pos,"29",True)),
+							telegram.InlineKeyboardButton("30", callback_data='l' + segno + change(inf,pos,"30",True)),
+							]
+						giorni2 = [
+							telegram.InlineKeyboardButton("Chiudi", callback_data='Chiudi'),
+							]
 				
 				keyboard = [
 				[
@@ -1146,6 +1137,7 @@ def button(update,_: CallbackContext):
 			[
 				telegram.InlineKeyboardButton("2020", callback_data=prefix + segno + change(inf,pos,"2020",False)),
 				telegram.InlineKeyboardButton("2021", callback_data=prefix + segno + change(inf,pos,"2021",False)),
+				telegram.InlineKeyboardButton("2022", callback_data=prefix + segno + change(inf,pos,"2022",False)),
 			],	
 			[
 				telegram.InlineKeyboardButton("Annulla", callback_data="D" + inf),

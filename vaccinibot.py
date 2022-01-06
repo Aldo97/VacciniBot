@@ -501,7 +501,9 @@ def fascia(info):
 			string += "\nDose addizionale-booster su ciclo primario\n" + bar(somm_dose_addizionale_booster,som2+somJ-sompreJ,nextended=True)
 			
 	if data1:
-		string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somm_dose_addizionale_booster,po)
+		if forn == "Janssen":
+			somJ = sompre
+		string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ-sompre+somm_dose_addizionale_booster,po)
 	
 	if (fascia == False or over12 or under12) and data1 == False:	
 		if forn == "Janssen":

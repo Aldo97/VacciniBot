@@ -49,9 +49,20 @@ def segnalazione(update, context):
 		raise Exception("Segnalazione senza username")
 	if len(update.message.text.split()) == 1:
 		update.message.reply_text("Si prega di immettere il messaggio della segnalazione come argomento del comando /segnalazione")
-		telegram.Bot(token=TOKEN).send_message(chat_id=cid, text="Segnalazione vuota da: @" + user['username'])
+		telegram.Bot(token=TOKEN).send_message(chat_id=cid, text="Segnalazione vuota da: @" + user['username'] + " (" + str(update.message.chat.id) + ")")
 	else:
-		telegram.Bot(token=TOKEN).send_message(chat_id=cid, text=update.message.text[14:] + "\n\nSegnalazione da: @" + user['username'])
+		telegram.Bot(token=TOKEN).send_message(chat_id=cid, text=update.message.text[14:] + "\n\nSegnalazione da: @" + user['username'] + " (" + str(update.message.chat.id) + ")")
+		
+def risposta(update, context):
+	if update.message.chat.id != 28671832:
+		return
+	if len(update.message.text.split()) == 1:
+		update.message.reply_text("Si prega di impostare un chat_id, risposta non inviata")
+		raise Exception("Risposta senza chat_id")
+	else:
+		cid = update.message.text.split(" ")[1]
+		testo = ' '.join(update.message.text.split(" ")[2:])
+		telegram.Bot(token=TOKEN).send_message(chat_id=cid, text=testo)
 		
 def consegne(dis,**kwargs):
 	data=kwargs.get('data',False)
@@ -236,15 +247,18 @@ def greenpass(string,guariti,fascia,reg):
 	
 	string += "\n"
 	
-	_,som2,somJ,_,sompreJ,vaccinatiB = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=270)).strftime('%Y%m%d'))
+	_,som2,somJ,_,sompreJ,vaccinatiB = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=180)).strftime('%Y%m%d'))
 	vaccinati2 = som2+somJ-sompreJ
 	guaritiGP=0
+	_,_,_,_,_,vaccinatiB = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=270)).strftime('%Y%m%d'))
 	for i in guariti.totale_guariti.tolist():
 		guaritiGP += i
 	string += "\n" + "Guariti:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB)
 	string += "\n" + "Ciclo primario completato:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB)
 	string += "\n" + "Vaccinati con addizionale-booster:\n" + bar(vaccinatiB,guaritiGP+vaccinati2+vaccinatiB)
-	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati\nIl green pass per guariti dura 6 mesi, quello per vaccinati 9 mesi.\nVengono contati anche i green pass consegnati a minori di 11 anni."
+	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati\nIl green pass per guariti e per vaccinati (ciclo completo) dura 6 mesi, quello per vaccinati con booster 9 mesi."
+	if not fascia:
+		string += "\nVengono contati anche i green pass consegnati a minori di 11 anni."
 	return string
 
 def vaccinati(update,CallbackContext):
@@ -1254,6 +1268,7 @@ def main():
 
 	disp.add_handler(CommandHandler("help", help))
 	disp.add_handler(CommandHandler("segnalazione", segnalazione))
+	disp.add_handler(CommandHandler("risposta", risposta))
 	disp.add_handler(CommandHandler("vaccinati", vaccinati))
 	disp.add_handler(CommandHandler("start", vaccinati))
 	disp.add_handler(CallbackQueryHandler(button))

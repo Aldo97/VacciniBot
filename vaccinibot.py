@@ -164,10 +164,13 @@ def somministrazioni(som,**kwargs):
 	for i in som.dose_addizionale_booster.tolist():
 		sum_da += i
 	
+	sumimm = 0
+	for i in som.booster_immuno.tolist():
+		sumimm += i
 	if forn == False:
-		return sum,sum2,sumJ,sumpre,sumpreJ,sum_da
+		return sum,sum2,sumJ,sumpre,sumpreJ,sum_da,sumimm
 	else:
-		return sum,sum2,0,sumpre,sumpreJ,sum_da
+		return sum,sum2,0,sumpre,sumpreJ,sum_da,sumimm
 		
 def pop(plat,**kwargs):
 	fascia=kwargs.get('fascia',"tot")
@@ -196,6 +199,8 @@ def istat21(dati_istat21,fascia,reg):
 	return sum,sumV
 
 def platea(file_platea,fascia,reg):
+	if reg == False:
+		reg = "IT"
 	if reg != "IT":
 		file_platea = file_platea[file_platea.area == reg]
 	
@@ -229,6 +234,34 @@ def istat21_show(reg):
 	
 	return string
 
+def guaritiPost1(guariti,fascia,reg):
+	if reg and reg != "0":
+		guariti = guariti[guariti.area == reg]
+	
+	nfascia = []
+	
+	if fascia != False and len(fascia.split()) != 1:
+		for i in fascia.split():
+			if i != "80-90":
+				nfascia.append(i)
+			else:
+				nfascia.append("80+")
+				break
+	else:
+		nfascia.append(fascia)
+		if nfascia == "80-90" or nfascia == "90+":
+			return 0
+
+	guarigioni = 0
+	for i in nfascia:
+		if i != False:
+			for k in guariti[guariti.fascia_anagrafica == i].guariti_post_somm.tolist():
+				guarigioni += k
+		else:
+			for k in guariti.guariti_post_somm.tolist():
+				guarigioni += k
+	return guarigioni
+	
 def greenpass(string,guariti,fascia,reg):
 	if reg and reg != "0":
 		guariti = guariti[guariti.area == reg]
@@ -247,16 +280,20 @@ def greenpass(string,guariti,fascia,reg):
 	
 	string += "\n"
 	
-	_,som2,somJ,_,sompreJ,vaccinatiB = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=180)).strftime('%Y%m%d'))
+	_,som2,somJ,_,sompreJ,_,_ = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=180)).strftime('%Y%m%d'))
 	vaccinati2 = som2+somJ-sompreJ
 	guaritiGP=0
-	_,_,_,_,_,vaccinatiB = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=270)).strftime('%Y%m%d'))
-	for i in guariti.totale_guariti.tolist():
+	guaritiPost=0
+	_,_,_,_,_,vaccinatiB,_ = somministrazioni(somministrate,fascia=fascia,reg=reg)
+	for i in guariti.guariti_senza_somm.tolist():
 		guaritiGP += i
-	string += "\n" + "Guariti:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB)
-	string += "\n" + "Ciclo primario completato:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB)
-	string += "\n" + "Vaccinati con addizionale-booster:\n" + bar(vaccinatiB,guaritiGP+vaccinati2+vaccinatiB)
-	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati\nIl green pass per guariti e per vaccinati (ciclo completo) dura 6 mesi, quello per vaccinati con booster 9 mesi."
+	for i in guariti.guariti_post_somm:
+		guaritiPost += i
+	string += "\n" + "Guariti:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB+guaritiPost)
+	string += "\n" + "Ciclo primario completato con vaccino:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB+guaritiPost)
+	string += "\n" + "Vaccinati con addizionale-booster:\n" + bar(vaccinatiB,guaritiGP+vaccinati2+vaccinatiB+guaritiPost)
+	string += "\n" + "Guariti dopo ciclo primario completato:\n" + bar(guaritiPost,guaritiGP+vaccinati2+vaccinatiB+guaritiPost)
+	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati\nIl green pass per guariti e per vaccinati (ciclo completo) dura 6 mesi, quello per vaccinati con booster indefinitivamente.\nChi ha completato il ciclo primario con guarigione compare solo una volta, a meno di somministrazione booster."
 	if not fascia:
 		string += "\nVengono contati anche i green pass consegnati a minori di 11 anni."
 	return string
@@ -454,11 +491,12 @@ def fascia(info):
 	po=0
 	pov=0
 	somm_dose_addizionale_booster=0
+	somimm=0
 	for i in fascia.split():
 		if i == "0":
 			i = False
 			fascia = False
-		u,d,g,p,k,da = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		u,d,g,p,k,da,im = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
 		t,tv = pop(plat,reg=reg,fascia=i)
 		som1 += u
 		som2 += d
@@ -468,6 +506,7 @@ def fascia(info):
 		po += t
 		pov += tv
 		somm_dose_addizionale_booster += da
+		somimm += im
 		
 	if fascia == "05-11":
 		under12 = True
@@ -499,21 +538,35 @@ def fascia(info):
 	
 	if forn == False or forn != "Janssen":
 		string += "\nVaccinati con almeno 1 dose\n" + bar(som1+somJ,po,nextended=True)	
+		
+	if forn == False:
+		guarigioni = guaritiPost1(guariti,fascia,reg)
+	else:
+		guarigioni = 0
+		
 	string += "\nCiclo primario completato\n" + bar(som2+somJ-sompreJ,po,nextended=True)
+			
 	if sompre != 0:
-		string += "\nGuariti con ciclo primario completato\n" + bar(sompre,po)
+		string += "\nPregressa infezione con ciclo primario completo\n" + bar(sompre,po)
 		
 	if forn != "Janssen":
 		if forn == False and fascia != "05-11":
 			string += "\nCiclo primario completato con J&J\n" + bar(somJ,po)
 		if data1 == False and som1+somJ > 0:
-			string += "\nCiclo primario completato su almeno 1 dose\n" + bar(som2+somJ-sompreJ,som1+somJ)
+			string += "\nCiclo primario completato su almeno 1 dose\n" + bar(som2+somJ-sompreJ,som1+somJ+guarigioni)
+	
 			
 	if somm_dose_addizionale_booster != 0:
 		string += "\nDose addizionale-booster\n" + bar(somm_dose_addizionale_booster,po)
 		if not data1:
-			string += "\nDose addizionale-booster su ciclo primario\n" + bar(somm_dose_addizionale_booster,som2+somJ-sompreJ,nextended=True)
-			
+			string += "\nDose addizionale-booster su ciclo primario\n" + bar(somm_dose_addizionale_booster,som2+somJ-sompreJ+guarigioni,nextended=True)
+		
+	if fascia == False:
+		string += "\nDose booster immunocompromessi su platea imm\n" + bar(somimm,platea(platea_booster_immunocompromessi,"tot",reg)[0])
+	
+	if guarigioni != 0:
+		string += "\nGuariti post ciclo primario\n" + bar(guarigioni,po)
+		
 	if data1:
 		if forn == "Janssen":
 			somJ = sompre
@@ -533,7 +586,7 @@ def vaccinifascia(string,reg,forn,data1,data2,dose,plat):
 		fascia = "05-11 12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	string += "\n"
 	for i in fascia.split():
-		som1,som2,somJ,sompre,sompreJ,som_da = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		som1,som2,somJ,sompre,sompreJ,som_da,_ = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
 		po, _ = pop(plat,reg=reg,fascia=i)
 			
 		if dose == 1:
@@ -553,7 +606,7 @@ def sommfascia(string,reg,forn,data1,data2,plat):
 		fascia = "05-11 12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	s=[]
 	for i in fascia.split():
-		som1,som2,somJ,sompre,sompreJ,som_da = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		som1,som2,somJ,sompre,sompreJ,som_da,_ = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
 		s.append(som1+som2+somJ-sompre+som_da)
 		
 	string += "\n"
@@ -565,7 +618,7 @@ def sommfascia(string,reg,forn,data1,data2,plat):
 	return string
 	
 def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
-	forn =["Pfizer/BioNTech","Moderna","Vaxzevria (AstraZeneca)","Janssen"]
+	forn =["Pfizer/BioNTech","Moderna","Vaxzevria (AstraZeneca)","Janssen","Novavax"]
 	string +="\n"
 	
 	if fascia == "0":
@@ -573,13 +626,13 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 		if vac:
 			po = pov
 		for i in forn:
-			som1,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=False,forn=i,data1=data1,data2=data2)
+			som1,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=False,forn=i,data1=data1,data2=data2)
 			string += "\nQuota di vaccinati con " + i + "\n" + bar(som1,po)
 		return string
 	
 	if fascia == "05-11":
 		po,_ = pop(plat,reg=reg,fascia="05-11")
-		som1,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia="05-11",data1=data1,data2=data2)
+		som1,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia="05-11",data1=data1,data2=data2)
 		string += "\nQuota di vaccinati con Pfizer Pediatrico\n" + bar(som1,po)
 		return string
 	data=[]
@@ -588,7 +641,7 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 	for i in forn:
 		s=[]
 		for k in fascia.split():
-			som1,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=k,forn=i,data1=data1,data2=data2)
+			som1,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=k,forn=i,data1=data1,data2=data2)
 			s.append(som1)
 		data.append(s)
 		
@@ -831,10 +884,9 @@ def button(update,_: CallbackContext):
 			if inf.split(",")[0] == "0" or inf.split(",")[0] == "1" or segno == "+" or segno == "%" or segno == "$" or segno == "&":
 				pediatrico = [
 				telegram.InlineKeyboardButton("Pfizer Pediatrico", callback_data="v" + segno + change(inf,2,"PfizerP",False)),
-				telegram.InlineKeyboardButton("Tutti i vaccini", callback_data="v" + segno + change(inf,2,"0",False)),
 				]
 			else:
-				pediatrico = [telegram.InlineKeyboardButton("Tutti i vaccini", callback_data="v" + segno + change(inf,2,"0",False)),]
+				pediatrico = []
 			vax1 =[
 			telegram.InlineKeyboardButton("Pfizer", callback_data="v" + segno + change(inf,2,"Pfizer",False)),
 			telegram.InlineKeyboardButton("Moderna", callback_data="v" + segno + change(inf,2,"Moderna",False)),
@@ -843,14 +895,20 @@ def button(update,_: CallbackContext):
 			telegram.InlineKeyboardButton("Astrazeneca", callback_data="v" + segno + change(inf,2,"Az",False)),
 			telegram.InlineKeyboardButton("Janssen", callback_data="v" + segno + change(inf,2,"J&J",False)),
 			]
+			vax3 = [
+			telegram.InlineKeyboardButton("Novavax", callback_data="v" + segno + change(inf,2,"Novavax",False)),
+			telegram.InlineKeyboardButton("Tutti i vaccini", callback_data="v" + segno + change(inf,2,"0",False)),
+			]
 		else:
 			vax1 = []
 			vax2 = []
+			vax3 = []
 			pediatrico = []
 
 		keyboard = [
 			vax1,
 			vax2,
+			vax3,
 			pediatrico,
 			sommfascia,
 		[
@@ -1281,6 +1339,7 @@ def tab():
 	global somministrate
 	global distribuite
 	global file_platea
+	global platea_booster_immunocompromessi
 	global guariti
 	global dati_istat21
 	global agg
@@ -1293,6 +1352,7 @@ def tab():
 			somministrate = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-latest.csv')
 			distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
 			file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
+			platea_booster_immunocompromessi = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-booster-immunocompromessi.csv')
 			guariti = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/soggetti-guariti.csv')
 			agg = lastupd()
 		agg2 = date.datetime.now().strftime("%H:%M:%S")
@@ -1302,6 +1362,7 @@ def forceupd():
 	global somministrate
 	global distribuite
 	global file_platea
+	global platea_booster_immunocompromessi
 	global guariti
 	global agg
 	global agg2	
@@ -1309,6 +1370,7 @@ def forceupd():
 	somministrate = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/somministrazioni-vaccini-latest.csv')
 	distribuite = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/consegne-vaccini-latest.csv')
 	file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
+	platea_booster_immunocompromessi = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-booster-immunocompromessi.csv')
 	guariti = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/soggetti-guariti.csv')
 	agg = lastupd()
 	agg2 = date.datetime.now().strftime("%H:%M:%S")

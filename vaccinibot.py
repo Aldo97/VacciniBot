@@ -135,7 +135,7 @@ def somministrazioni(som,**kwargs):
 			som = som[som.fascia_anagrafica == "80-89"].append(som[som.fascia_anagrafica == "90+"])
 		else:
 			som = som[som.fascia_anagrafica == fascia]
-		
+	
 	sum=0
 	for i in som.prima_dose.tolist():
 		sum += i
@@ -167,10 +167,16 @@ def somministrazioni(som,**kwargs):
 	sumimm = 0
 	for i in som.booster_immuno.tolist():
 		sumimm += i
+	
+	sumb2 = 0
+	if fascia != "90+":
+		for i in som.d2_booster.tolist():
+			sumb2 += i
+
 	if forn == False:
-		return sum,sum2,sumJ,sumpre,sumpreJ,sum_da,sumimm
+		return sum,sum2,sumJ,sumpre,sumpreJ,sum_da,sumimm,sumb2
 	else:
-		return sum,sum2,0,sumpre,sumpreJ,sum_da,sumimm
+		return sum,sum2,0,sumpre,sumpreJ,sum_da,sumimm,sumb2
 		
 def pop(plat,**kwargs):
 	fascia=kwargs.get('fascia',"tot")
@@ -203,15 +209,31 @@ def platea(file_platea,fascia,reg):
 		reg = "IT"
 	if reg != "IT":
 		file_platea = file_platea[file_platea.area == reg]
-	
+	if not fascia:
+		fascia = "tot"
 	if fascia != "tot":
-		file_platea = file_platea[file_platea.fascia_anagrafica == fascia]
-	
+		if 'fascia_anagrafica' in file_platea:
+			file_platea = file_platea[file_platea.fascia_anagrafica == fascia]
+		else:
+			new_platea = pd.DataFrame(columns=['area','nome_area','categoria_prevalente','totale_popolazione'])
+			for i in checkfascia2b(fascia).split():
+				new_platea = new_platea.append(file_platea[file_platea.categoria_prevalente == i], ignore_index=True)
+			file_platea = new_platea
 	sum = 0
 	for i in file_platea.totale_popolazione:
 		sum += i
 		
 	return sum,sum
+
+def checkfascia2b(fascia):
+	nfascia = ""
+	for i in fascia.split():
+		if i != "80-89" and i != "80+" and i != "90+":
+			nfascia += i + " "
+		if i == "80-89" or i == "80+":
+			nfascia += "80-89"
+
+	return nfascia
 
 def istat21_show(reg):
 	if reg == "0" or reg == "IT":
@@ -280,19 +302,20 @@ def greenpass(string,guariti,fascia,reg):
 	
 	string += "\n"
 	
-	_,som2,somJ,_,sompreJ,_,_ = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=180)).strftime('%Y%m%d'))
+	_,som2,somJ,_,sompreJ,_,_,_ = somministrazioni(somministrate,fascia=fascia,reg=reg,data1=(date.datetime.today() - date.timedelta(days=180)).strftime('%Y%m%d'))
 	vaccinati2 = som2+somJ-sompreJ
 	guaritiGP=0
 	guaritiPost=0
-	_,_,_,_,_,vaccinatiB,_ = somministrazioni(somministrate,fascia=fascia,reg=reg)
+	_,_,_,_,_,vaccinatiB,_,somb2 = somministrazioni(somministrate,fascia=fascia,reg=reg)
 	for i in guariti.guariti_senza_somm.tolist():
 		guaritiGP += i
 	for i in guariti.guariti_post_somm:
 		guaritiPost += i
-	string += "\n" + "Guariti:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB+guaritiPost)
-	string += "\n" + "Ciclo primario completato con vaccino:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB+guaritiPost)
-	string += "\n" + "Vaccinati con addizionale-booster:\n" + bar(vaccinatiB,guaritiGP+vaccinati2+vaccinatiB+guaritiPost)
-	string += "\n" + "Guariti dopo ciclo primario completato:\n" + bar(guaritiPost,guaritiGP+vaccinati2+vaccinatiB+guaritiPost)
+	string += "\n" + "Guariti:\n" + bar(guaritiGP,guaritiGP+vaccinati2+vaccinatiB+guaritiPost+somb2)
+	string += "\n" + "Ciclo primario completato con vaccino:\n" + bar(vaccinati2,guaritiGP+vaccinati2+vaccinatiB+guaritiPost+somb2)
+	string += "\n" + "Vaccinati con addizionale-booster:\n" + bar(vaccinatiB,guaritiGP+vaccinati2+vaccinatiB+guaritiPost+somb2)
+	string += "\n" + "Guariti dopo ciclo primario completato:\n" + bar(guaritiPost,guaritiGP+vaccinati2+vaccinatiB+guaritiPost+somb2)
+	string += "\n" + "Vaccinati con secondo booster:\n" + bar(somb2,guaritiGP+vaccinati2+vaccinatiB+guaritiPost+somb2)
 	string += "\n\nNon si considerano le prime dosi (eccetto J&J) ai fini del conto di green pass attivi in Italia.\nUna stessa persona potrebbe avere più di un green pass valido.\nI green pass da test non sono considerati\nIl green pass per guariti e per vaccinati (ciclo completo) dura 6 mesi, quello per vaccinati con booster indefinitivamente.\nChi ha completato il ciclo primario con guarigione compare solo una volta, a meno di somministrazione booster."
 	if not fascia:
 		string += "\nVengono contati anche i green pass consegnati a minori di 11 anni."
@@ -488,6 +511,7 @@ def fascia(info):
 	somJ=0
 	sompre=0
 	sompreJ=0
+	somb2=0
 	po=0
 	pov=0
 	somm_dose_addizionale_booster=0
@@ -496,13 +520,14 @@ def fascia(info):
 		if i == "0":
 			i = False
 			fascia = False
-		u,d,g,p,k,da,im = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		u,d,g,p,k,da,im,b2 = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
 		t,tv = pop(plat,reg=reg,fascia=i)
 		som1 += u
 		som2 += d
 		somJ += g
 		sompre += p
 		sompreJ += k
+		somb2 += b2
 		po += t
 		pov += tv
 		somm_dose_addizionale_booster += da
@@ -564,18 +589,21 @@ def fascia(info):
 	if fascia == False:
 		string += "\nDose booster immunocompromessi su platea imm\n" + bar(somimm,platea(platea_booster_immunocompromessi,"tot",reg)[0])
 	
+	if somb2 != 0:
+		string += "\nSecondo booster su platea 2b\n" + bar(somb2,platea(platea_second_booster,fascia,reg)[0])
+		
 	if guarigioni != 0:
 		string += "\nGuariti post ciclo primario\n" + bar(guarigioni,po)
 		
 	if data1:
 		if forn == "Janssen":
 			somJ = sompre
-		string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ-sompre+somm_dose_addizionale_booster,po)
+		string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somb2-sompre+somm_dose_addizionale_booster,po)
 	
 	if (fascia == False or over12 or under12) and data1 == False:	
 		if forn == "Janssen":
 			somJ = sompre
-		string += "\nDosi somministrate su consegnate\n" + bar(som1+som2+somJ-sompre+somm_dose_addizionale_booster,cons+consJ)
+		string += "\nDosi somministrate su consegnate\n" + bar(som1+som2+somJ-sompre+somm_dose_addizionale_booster+somb2,cons+consJ)
 	
 	return string
 	
@@ -586,7 +614,7 @@ def vaccinifascia(string,reg,forn,data1,data2,dose,plat):
 		fascia = "05-11 12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	string += "\n"
 	for i in fascia.split():
-		som1,som2,somJ,sompre,sompreJ,som_da,_ = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		som1,som2,somJ,sompre,sompreJ,som_da,_,somb2 = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
 		po, _ = pop(plat,reg=reg,fascia=i)
 			
 		if dose == 1:
@@ -596,7 +624,7 @@ def vaccinifascia(string,reg,forn,data1,data2,dose,plat):
 				somJ = som1
 			string += "\nCiclo primario completato fascia " + i + "\n" + bar(som2+somJ-sompreJ,po,nextended=True)
 		else:
-			string += "\nDosi addizionali-booster fascia " + i + "\n" + bar(som_da,po,nextended=True)
+			string += "\nDosi addizionali-booster e 2° b fascia " + i + "\n" + bar(som_da+somb2,po,nextended=True)
 	return string
 
 def sommfascia(string,reg,forn,data1,data2,plat):
@@ -606,8 +634,8 @@ def sommfascia(string,reg,forn,data1,data2,plat):
 		fascia = "05-11 12-19 20-29 30-39 40-49 50-59 60-69 70-79 80+"
 	s=[]
 	for i in fascia.split():
-		som1,som2,somJ,sompre,sompreJ,som_da,_ = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
-		s.append(som1+som2+somJ-sompre+som_da)
+		som1,som2,somJ,sompre,sompreJ,som_da,_,somb2 = somministrazioni(somministrate,reg=reg,fascia=i,forn=forn,data1=data1,data2=data2)
+		s.append(som1+som2+somJ+somb2-sompre+som_da)
 		
 	string += "\n"
 	k=0
@@ -626,13 +654,13 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 		if vac:
 			po = pov
 		for i in forn:
-			som1,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=False,forn=i,data1=data1,data2=data2)
+			som1,_,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=False,forn=i,data1=data1,data2=data2)
 			string += "\nQuota di vaccinati con " + i + "\n" + bar(som1,po)
 		return string
 	
 	if fascia == "05-11":
 		po,_ = pop(plat,reg=reg,fascia="05-11")
-		som1,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia="05-11",data1=data1,data2=data2)
+		som1,_,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia="05-11",data1=data1,data2=data2)
 		string += "\nQuota di vaccinati con Pfizer Pediatrico\n" + bar(som1,po)
 		return string
 	data=[]
@@ -641,7 +669,7 @@ def fasciavaccini(string,reg,fascia,data1,data2,vac,plat):
 	for i in forn:
 		s=[]
 		for k in fascia.split():
-			som1,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=k,forn=i,data1=data1,data2=data2)
+			som1,_,_,_,_,_,_,_=somministrazioni(somministrate,reg=reg,fascia=k,forn=i,data1=data1,data2=data2)
 			s.append(som1)
 		data.append(s)
 		
@@ -1340,6 +1368,7 @@ def tab():
 	global distribuite
 	global file_platea
 	global platea_booster_immunocompromessi
+	global platea_second_booster
 	global guariti
 	global dati_istat21
 	global agg
@@ -1354,6 +1383,7 @@ def tab():
 			file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
 			platea_booster_immunocompromessi = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-booster-immunocompromessi.csv')
 			guariti = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/soggetti-guariti.csv')
+			platea_second_booster = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-second-booster.csv')
 			agg = lastupd()
 		agg2 = date.datetime.now().strftime("%H:%M:%S")
 		time.sleep(90*60)
@@ -1363,6 +1393,7 @@ def forceupd():
 	global distribuite
 	global file_platea
 	global platea_booster_immunocompromessi
+	global platea_second_booster
 	global guariti
 	global agg
 	global agg2	
@@ -1372,6 +1403,7 @@ def forceupd():
 	file_platea = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea.csv')
 	platea_booster_immunocompromessi = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-booster-immunocompromessi.csv')
 	guariti = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/soggetti-guariti.csv')
+	platea_second_booster = pd.read_csv('https://raw.githubusercontent.com/italia/covid19-opendata-vaccini/master/dati/platea-second-booster.csv')
 	agg = lastupd()
 	agg2 = date.datetime.now().strftime("%H:%M:%S")
 		

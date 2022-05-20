@@ -589,7 +589,7 @@ def fascia(info):
 	if fascia == False:
 		string += "\nDose booster immunocompromessi su platea imm\n" + bar(somimm,platea(platea_booster_immunocompromessi,"tot",reg)[0])
 	
-	if somb2 != 0:
+	if somb2 != 0 and fascia == False:
 		string += "\nSecondo booster su platea 2b\n" + bar(somb2,platea(platea_second_booster,fascia,reg)[0])
 		
 	if guarigioni != 0:

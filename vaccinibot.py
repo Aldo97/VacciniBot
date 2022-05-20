@@ -79,11 +79,11 @@ def consegne(dis,**kwargs):
 	if reg:
 		dis = dis[dis.area == reg]
 	if forn:
-		dis = dis[dis.fornitore == forn]
+		dis = dis[dis.forn == forn]
 		sumJ = 0
 	else:
 		sumJ = 0
-		disJ = dis[dis.fornitore == "Janssen"]
+		disJ = dis[dis.forn == "Janssen"]
 		for i in disJ.numero_dosi.tolist():
 			sumJ += i
 
@@ -95,7 +95,7 @@ def consegne(dis,**kwargs):
 		sum-=sumJ
 	
 	if over12:
-		for i in dis[dis.fornitore == "Pfizer Pediatrico"].numero_dosi.tolist():
+		for i in dis[dis.forn == "Pfizer Pediatrico"].numero_dosi.tolist():
 			sum-=i
 
 	return sum,sumJ
@@ -122,55 +122,55 @@ def somministrazioni(som,**kwargs):
 	fascia=kwargs.get('fascia',False)
 	
 	if data1:
-		som = som[pd.to_datetime(som['data_somministrazione'], format='%Y-%m-%d') >= date.datetime.strptime(data1,'%Y%m%d')]
+		som = som[pd.to_datetime(som['data'], format='%Y-%m-%d') >= date.datetime.strptime(data1,'%Y%m%d')]
 	if data2:
-		som = som[pd.to_datetime(som['data_somministrazione'], format='%Y-%m-%d') <= date.datetime.strptime(data2,'%Y%m%d')]
+		som = som[pd.to_datetime(som['data'], format='%Y-%m-%d') <= date.datetime.strptime(data2,'%Y%m%d')]
 	if reg:
 		som = som[som.area == reg]
 	if forn:
-		som = som[som.fornitore == forn]
+		som = som[som.forn == forn]
 	
 	if fascia:
 		if fascia == "80+":
-			som = som[som.fascia_anagrafica == "80-89"].append(som[som.fascia_anagrafica == "90+"])
+			som = som[som.eta == "80-89"].append(som[som.eta == "90+"])
 		else:
-			som = som[som.fascia_anagrafica == fascia]
+			som = som[som.eta == fascia]
 	
 	sum=0
-	for i in som.prima_dose.tolist():
+	for i in som.d1.tolist():
 		sum += i
 
 	sumpreJ=0
 	if forn == False:
 		sumJ = 0
-		for i in som[som.fornitore == "Janssen"].prima_dose.tolist():
+		for i in som[som.forn == "Janssen"].d1.tolist():
 			sumJ += i
-		for i in som[som.fornitore == "Janssen"].pregressa_infezione.tolist():
+		for i in som[som.forn == "Janssen"].dpi.tolist():
 			sumJ += i
 			sumpreJ += i
 		sum = sum - sumJ
 	sum2=0
-	for i in som.seconda_dose.tolist():
+	for i in som.d2.tolist():
 		sum2 +=i
 	
 	sumpre = 0	
-	for i in som.pregressa_infezione.tolist():
+	for i in som.dpi.tolist():
 		sumpre += i
 	sum += sumpre
 	if forn != "Janssen":
 		sum2 += sumpre
 	
 	sum_da = 0
-	for i in som.dose_addizionale_booster.tolist():
+	for i in som.db1.tolist():
 		sum_da += i
 	
 	sumimm = 0
-	for i in som.booster_immuno.tolist():
+	for i in som.dbi.tolist():
 		sumimm += i
 	
 	sumb2 = 0
 	if fascia != "90+":
-		for i in som.d2_booster.tolist():
+		for i in som.db2.tolist():
 			sumb2 += i
 
 	if forn == False:
@@ -212,10 +212,10 @@ def platea(file_platea,fascia,reg):
 	if not fascia:
 		fascia = "tot"
 	if fascia != "tot":
-		if 'fascia_anagrafica' in file_platea:
-			file_platea = file_platea[file_platea.fascia_anagrafica == fascia]
+		if 'eta' in file_platea:
+			file_platea = file_platea[file_platea.eta == fascia]
 		else:
-			new_platea = pd.DataFrame(columns=['area','nome_area','categoria_prevalente','totale_popolazione'])
+			new_platea = pd.DataFrame(columns=['area','reg','categoria_prevalente','totale_popolazione'])
 			for i in checkfascia2b(fascia).split():
 				new_platea = new_platea.append(file_platea[file_platea.categoria_prevalente == i], ignore_index=True)
 			file_platea = new_platea
@@ -240,7 +240,7 @@ def istat21_show(reg):
 		reg = "IT"
 		reg_name = "Italia"
 	else:
-		reg_name = file_platea.loc[file_platea.area == reg].nome_area.tolist()[0]
+		reg_name = file_platea.loc[file_platea.area == reg].reg.tolist()[0]
 
 	fascia = dati_istat21.loc[dati_istat21.area == "IT", "fascia"].tolist()
 	fascia.remove("tot")
@@ -277,7 +277,7 @@ def guaritiPost1(guariti,fascia,reg):
 	guarigioni = 0
 	for i in nfascia:
 		if i != False:
-			for k in guariti[guariti.fascia_anagrafica == i].guariti_post_somm.tolist():
+			for k in guariti[guariti.eta == i].guariti_post_somm.tolist():
 				guarigioni += k
 		else:
 			for k in guariti.guariti_post_somm.tolist():
@@ -296,7 +296,7 @@ def greenpass(string,guariti,fascia,reg):
 		if fascia == "80-89" or fascia == "90+":
 			fascia = "80+"
 		string += "\nFascia " + fascia
-		guariti = guariti[guariti.fascia_anagrafica == fascia]
+		guariti = guariti[guariti.eta == fascia]
 	else:
 		fascia = False
 	
@@ -437,7 +437,7 @@ def fascia(info):
 		reg = False
 	
 	if reg:
-		string = file_platea.loc[file_platea.area == reg].nome_area.tolist()[0]
+		string = file_platea.loc[file_platea.area == reg].reg.tolist()[0]
 	else:
 		string = "Italia"
 		
@@ -514,7 +514,7 @@ def fascia(info):
 	somb2=0
 	po=0
 	pov=0
-	somm_dose_addizionale_booster=0
+	somm_db1=0
 	somimm=0
 	for i in fascia.split():
 		if i == "0":
@@ -530,7 +530,7 @@ def fascia(info):
 		somb2 += b2
 		po += t
 		pov += tv
-		somm_dose_addizionale_booster += da
+		somm_db1 += da
 		somimm += im
 		
 	if fascia == "05-11":
@@ -557,7 +557,7 @@ def fascia(info):
 	if mancanti:
 		string += "\nNon vaccinati\n" + bar(po-som1-somJ,po)
 		string += "\nSenza ciclo primario completato\n" + bar(po-som2-somJ+sompreJ,po)
-		string += "\nSenza addizionale-booster\n" + bar(po-somm_dose_addizionale_booster,po)
+		string += "\nSenza addizionale-booster\n" + bar(po-somm_db1,po)
 		return string
 		
 	
@@ -581,10 +581,10 @@ def fascia(info):
 			string += "\nCiclo primario completato su almeno 1 dose\n" + bar(som2+somJ-sompreJ,som1+somJ+guarigioni)
 	
 			
-	if somm_dose_addizionale_booster != 0:
-		string += "\nDose addizionale-booster\n" + bar(somm_dose_addizionale_booster,po)
+	if somm_db1 != 0:
+		string += "\nDose addizionale-booster\n" + bar(somm_db1,po)
 		if not data1:
-			string += "\nDose addizionale-booster su ciclo primario\n" + bar(somm_dose_addizionale_booster,som2+somJ-sompreJ+guarigioni,nextended=True)
+			string += "\nDose addizionale-booster su ciclo primario\n" + bar(somm_db1,som2+somJ-sompreJ+guarigioni,nextended=True)
 		
 	if fascia == False:
 		string += "\nDose booster immunocompromessi su platea imm\n" + bar(somimm,platea(platea_booster_immunocompromessi,"tot",reg)[0])
@@ -598,12 +598,12 @@ def fascia(info):
 	if data1:
 		if forn == "Janssen":
 			somJ = sompre
-		string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somb2-sompre+somm_dose_addizionale_booster,po)
+		string += "\nSomministrazioni totali su popolazione\n" + bar(som1+som2+somJ+somb2-sompre+somm_db1,po)
 	
 	if (fascia == False or over12 or under12) and data1 == False:	
 		if forn == "Janssen":
 			somJ = sompre
-		string += "\nDosi somministrate su consegnate\n" + bar(som1+som2+somJ-sompre+somm_dose_addizionale_booster+somb2,cons+consJ)
+		string += "\nDosi somministrate su consegnate\n" + bar(som1+som2+somJ-sompre+somm_db1+somb2,cons+consJ)
 	
 	return string
 	
